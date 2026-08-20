@@ -1,0 +1,22 @@
+{
+  "rows": 152,
+  "provinces": 38,
+  "years": [
+    2023,
+    2024,
+    2025,
+    2026
+  ],
+  "population_totals": {
+    "2023": 278696100,
+    "2024": 281603900,
+    "2025": 284438600,
+    "2026": 287198400
+  },
+  "missing_sanitation": 38,
+  "missing_poverty": 76,
+  "notes": [
+    "Population is the official mid-year projection and may be joined to all months as a denominator, not treated as a monthly observation.",
+    "Poverty and sanitation retain their survey/reference period and are not interpolated."
+  ]
+}

@@ -1,0 +1,27 @@
+# Node build artifacts
+node_modules/
+frontend/node_modules/
+frontend/dist/
+
+# Python cache & build artifacts
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.pytest_cache/
+.venv/
+venv/
+env/
+
+# Git
+.git/
+.gitignore
+
+# Project zips, backups, and non-runtime materials
+*.zip
+*.tar
+*.gz
+data/raw/
+docs/
+deliverables/
+results/

@@ -1,0 +1,1 @@
+{"header":"The POWER Monthly and Annual API failed to complete your request; please review the errors below and the POWER Docs (https://power.larc.nasa.gov/docs/).","messages":["Please provide a maximum of 10 degree range in latitude.","Please provide a maximum of 10 degree range in longitude."]}

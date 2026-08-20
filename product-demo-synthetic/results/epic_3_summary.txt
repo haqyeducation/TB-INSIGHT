@@ -1,0 +1,20 @@
+=== EPIC 3: SPATIAL AI & RISK MAPPING SUMMARY ===
+
+--- SPATIAL AUTOCORRELATION (MORAN'S I) ---
+Moran's I Index: 0.4704
+P-value: 0.0010
+Interpretation: Clustered
+
+--- K-MEANS CLUSTERING EVALUATION ---
+Silhouette Score: 0.3168 (Closer to 1 is better)
+Davies-Bouldin Index: 1.0368 (Lower is better)
+
+--- DBSCAN ANOMALY DETECTION ---
+Anomalous Kecamatan (Outliers): None
+
+--- RISK ZONE CLASSIFICATION ---
+risk_zone
+Medium Risk    12
+Low Risk       12
+High Risk       7
+

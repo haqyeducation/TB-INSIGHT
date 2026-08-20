@@ -1,0 +1,244 @@
+{
+  "rows": 912,
+  "provinces": 38,
+  "periods": 24,
+  "duplicate_keys": 0,
+  "missing_by_column": {},
+  "spatial_methods": [
+    {
+      "province_code": 11,
+      "province": "ACEH",
+      "climate_spatial_method": "grid_cells_within_BIG_polygon",
+      "climate_grid_cells": 14
+    },
+    {
+      "province_code": 12,
+      "province": "SUMATERA UTARA",
+      "climate_spatial_method": "grid_cells_within_BIG_polygon",
+      "climate_grid_cells": 20
+    },
+    {
+      "province_code": 13,
+      "province": "SUMATERA BARAT",
+      "climate_spatial_method": "grid_cells_within_BIG_polygon",
+      "climate_grid_cells": 9
+    },
+    {
+      "province_code": 14,
+      "province": "RIAU",
+      "climate_spatial_method": "grid_cells_within_BIG_polygon",
+      "climate_grid_cells": 22
+    },
+    {
+      "province_code": 15,
+      "province": "JAMBI",
+      "climate_spatial_method": "grid_cells_within_BIG_polygon",
+      "climate_grid_cells": 13
+    },
+    {
+      "province_code": 16,
+      "province": "SUMATERA SELATAN",
+      "climate_spatial_method": "grid_cells_within_BIG_polygon",
+      "climate_grid_cells": 23
+    },
+    {
+      "province_code": 17,
+      "province": "BENGKULU",
+      "climate_spatial_method": "grid_cells_within_BIG_polygon",
+      "climate_grid_cells": 5
+    },
+    {
+      "province_code": 18,
+      "province": "LAMPUNG",
+      "climate_spatial_method": "grid_cells_within_BIG_polygon",
+      "climate_grid_cells": 10
+    },
+    {
+      "province_code": 19,
+      "province": "KEP. BANGKA BELITUNG",
+      "climate_spatial_method": "grid_cells_within_BIG_polygon",
+      "climate_grid_cells": 5
+    },
+    {
+      "province_code": 21,
+      "province": "KEPULAUAN RIAU",
+      "climate_spatial_method": "grid_cells_within_BIG_polygon",
+      "climate_grid_cells": 2
+    },
+    {
+      "province_code": 31,
+      "province": "DKI JAKARTA",
+      "climate_spatial_method": "nearest_POWER_grid_to_BIG_representative_point",
+      "climate_grid_cells": 1
+    },
+    {
+      "province_code": 32,
+      "province": "JAWA BARAT",
+      "climate_spatial_method": "grid_cells_within_BIG_polygon",
+      "climate_grid_cells": 9
+    },
+    {
+      "province_code": 33,
+      "province": "JAWA TENGAH",
+      "climate_spatial_method": "grid_cells_within_BIG_polygon",
+      "climate_grid_cells": 7
+    },
+    {
+      "province_code": 34,
+      "province": "DI YOGYAKARTA",
+      "climate_spatial_method": "grid_cells_within_BIG_polygon",
+      "climate_grid_cells": 1
+    },
+    {
+      "province_code": 35,
+      "province": "JAWA TIMUR",
+      "climate_spatial_method": "grid_cells_within_BIG_polygon",
+      "climate_grid_cells": 16
+    },
+    {
+      "province_code": 36,
+      "province": "BANTEN",
+      "climate_spatial_method": "grid_cells_within_BIG_polygon",
+      "climate_grid_cells": 2
+    },
+    {
+      "province_code": 51,
+      "province": "BALI",
+      "climate_spatial_method": "grid_cells_within_BIG_polygon",
+      "climate_grid_cells": 1
+    },
+    {
+      "province_code": 52,
+      "province": "NUSA TENGGARA BARAT",
+      "climate_spatial_method": "grid_cells_within_BIG_polygon",
+      "climate_grid_cells": 7
+    },
+    {
+      "province_code": 53,
+      "province": "NUSA TENGGARA TIMUR",
+      "climate_spatial_method": "grid_cells_within_BIG_polygon",
+      "climate_grid_cells": 14
+    },
+    {
+      "province_code": 61,
+      "province": "KALIMANTAN BARAT",
+      "climate_spatial_method": "grid_cells_within_BIG_polygon",
+      "climate_grid_cells": 35
+    },
+    {
+      "province_code": 62,
+      "province": "KALIMANTAN TENGAH",
+      "climate_spatial_method": "grid_cells_within_BIG_polygon",
+      "climate_grid_cells": 41
+    },
+    {
+      "province_code": 63,
+      "province": "KALIMANTAN SELATAN",
+      "climate_spatial_method": "grid_cells_within_BIG_polygon",
+      "climate_grid_cells": 9
+    },
+    {
+      "province_code": 64,
+      "province": "KALIMANTAN TIMUR",
+      "climate_spatial_method": "grid_cells_within_BIG_polygon",
+      "climate_grid_cells": 33
+    },
+    {
+      "province_code": 65,
+      "province": "KALIMANTAN UTARA",
+      "climate_spatial_method": "grid_cells_within_BIG_polygon",
+      "climate_grid_cells": 16
+    },
+    {
+      "province_code": 71,
+      "province": "SULAWESI UTARA",
+      "climate_spatial_method": "grid_cells_within_BIG_polygon",
+      "climate_grid_cells": 5
+    },
+    {
+      "province_code": 72,
+      "province": "SULAWESI TENGAH",
+      "climate_spatial_method": "grid_cells_within_BIG_polygon",
+      "climate_grid_cells": 16
+    },
+    {
+      "province_code": 73,
+      "province": "SULAWESI SELATAN",
+      "climate_spatial_method": "grid_cells_within_BIG_polygon",
+      "climate_grid_cells": 10
+    },
+    {
+      "province_code": 74,
+      "province": "SULAWESI TENGGARA",
+      "climate_spatial_method": "grid_cells_within_BIG_polygon",
+      "climate_grid_cells": 7
+    },
+    {
+      "province_code": 75,
+      "province": "GORONTALO",
+      "climate_spatial_method": "grid_cells_within_BIG_polygon",
+      "climate_grid_cells": 3
+    },
+    {
+      "province_code": 76,
+      "province": "SULAWESI BARAT",
+      "climate_spatial_method": "grid_cells_within_BIG_polygon",
+      "climate_grid_cells": 4
+    },
+    {
+      "province_code": 81,
+      "province": "MALUKU",
+      "climate_spatial_method": "grid_cells_within_BIG_polygon",
+      "climate_grid_cells": 11
+    },
+    {
+      "province_code": 82,
+      "province": "MALUKU UTARA",
+      "climate_spatial_method": "grid_cells_within_BIG_polygon",
+      "climate_grid_cells": 5
+    },
+    {
+      "province_code": 91,
+      "province": "PAPUA BARAT",
+      "climate_spatial_method": "grid_cells_within_BIG_polygon",
+      "climate_grid_cells": 16
+    },
+    {
+      "province_code": 92,
+      "province": "PAPUA BARAT DAYA",
+      "climate_spatial_method": "grid_cells_within_BIG_polygon",
+      "climate_grid_cells": 8
+    },
+    {
+      "province_code": 94,
+      "province": "PAPUA",
+      "climate_spatial_method": "grid_cells_within_BIG_polygon",
+      "climate_grid_cells": 19
+    },
+    {
+      "province_code": 95,
+      "province": "PAPUA SELATAN",
+      "climate_spatial_method": "grid_cells_within_BIG_polygon",
+      "climate_grid_cells": 29
+    },
+    {
+      "province_code": 96,
+      "province": "PAPUA TENGAH",
+      "climate_spatial_method": "grid_cells_within_BIG_polygon",
+      "climate_grid_cells": 15
+    },
+    {
+      "province_code": 97,
+      "province": "PAPUA PEGUNUNGAN",
+      "climate_spatial_method": "grid_cells_within_BIG_polygon",
+      "climate_grid_cells": 13
+    }
+  ],
+  "normal_period": "1991-2020",
+  "observation_period": "2024-2025",
+  "notes": [
+    "POWER monthly PRECTOTCORR is a mean daily precipitation rate; precipitation_mm multiplies it by calendar days.",
+    "Grid-cell averages are cosine-latitude weighted over POWER grid centres within BIG province polygons.",
+    "Small/island provinces without a contained grid centre use the nearest POWER grid cell to a BIG representative point and are flagged."
+  ]
+}

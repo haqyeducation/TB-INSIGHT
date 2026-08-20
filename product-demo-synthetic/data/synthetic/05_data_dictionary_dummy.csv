@@ -1,0 +1,35 @@
+file_name,column_name,description,unit,interval,intended_source
+01_master_kecamatan_surabaya_dummy.csv,kecamatan_id,"Kode unik dummy untuk join antarfile. Bukan kode resmi BPS/Kemendagri, gunakan ulang hanya untuk data dummy ini.",text,static,master_dummy
+01_master_kecamatan_surabaya_dummy.csv,kecamatan,Nama kecamatan Surabaya yang digunakan untuk join.,text,static,Pemkot Surabaya reference + normalized dummy
+01_master_kecamatan_surabaya_dummy.csv,wilayah_surabaya,Pembagian wilayah besar Surabaya: Pusat/Utara/Timur/Barat/Selatan.,text,static,dummy classification
+02_dinkes_tb_kecamatan_monthly_dummy_2015_2025.csv,kasus_tb_total_dummy,Total kasus TB agregat per kecamatan per bulan,kasus,monthly,Dinkes dummy
+02_dinkes_tb_kecamatan_monthly_dummy_2015_2025.csv,kasus_tb_anak_dummy,Kasus TB anak agregat per kecamatan per bulan,kasus,monthly,Dinkes dummy
+02_dinkes_tb_kecamatan_monthly_dummy_2015_2025.csv,tb_hiv_agregat_dummy,Kasus TB dengan HIV dalam bentuk agregat,kasus,monthly,Dinkes dummy
+02_dinkes_tb_kecamatan_monthly_dummy_2015_2025.csv,tb_dm_agregat_dummy,Kasus TB dengan DM dalam bentuk agregat,kasus,monthly,Dinkes dummy
+02_dinkes_tb_kecamatan_monthly_dummy_2015_2025.csv,tb_terkonfirmasi_bakteriologis_dummy,Kasus TB terkonfirmasi bakteriologis,kasus,monthly,Dinkes dummy
+02_dinkes_tb_kecamatan_monthly_dummy_2015_2025.csv,terduga_tb_diperiksa_dummy,Jumlah terduga TB yang diperiksa,orang,monthly,Dinkes dummy
+02_dinkes_tb_kecamatan_monthly_dummy_2015_2025.csv,pasien_mulai_pengobatan_dummy,Jumlah pasien yang mulai pengobatan TB,orang,monthly,Dinkes dummy
+02_dinkes_tb_kecamatan_monthly_dummy_2015_2025.csv,pasien_berhasil_pengobatan_dummy,Jumlah pasien dengan outcome berhasil; dummy disederhanakan per bulan,orang,monthly,Dinkes dummy
+02_dinkes_tb_kecamatan_monthly_dummy_2015_2025.csv,pasien_dropout_dummy,Jumlah pasien dropout; dummy disederhanakan per bulan,orang,monthly,Dinkes dummy
+02_dinkes_tb_kecamatan_monthly_dummy_2015_2025.csv,pasien_meninggal_dummy,Jumlah pasien meninggal; dummy disederhanakan per bulan,orang,monthly,Dinkes dummy
+02_dinkes_tb_kecamatan_monthly_dummy_2015_2025.csv,jumlah_skrining_dummy,Jumlah orang yang diskrining TB,orang,monthly,Dinkes dummy
+02_dinkes_tb_kecamatan_monthly_dummy_2015_2025.csv,positivity_rate_dummy,kasus_tb_total / terduga_tb_diperiksa,proporsi,monthly,Dinkes dummy
+03_bps_sosiodemografi_kecamatan_annual_dummy_2015_2025.csv,luas_km2_dummy,"Luas kecamatan dummy untuk simulasi density, bukan data resmi",km2,annual,BPS dummy
+03_bps_sosiodemografi_kecamatan_annual_dummy_2015_2025.csv,jumlah_penduduk_dummy,Jumlah penduduk dummy per kecamatan per tahun,orang,annual,BPS dummy
+03_bps_sosiodemografi_kecamatan_annual_dummy_2015_2025.csv,kepadatan_penduduk_per_km2_dummy,Jumlah penduduk / luas km2 dummy,orang/km2,annual,BPS dummy
+03_bps_sosiodemografi_kecamatan_annual_dummy_2015_2025.csv,persentase_kemiskinan_dummy,Persentase penduduk/rumah tangga miskin dummy,persen,annual,BPS dummy
+03_bps_sosiodemografi_kecamatan_annual_dummy_2015_2025.csv,akses_sanitasi_layak_persen_dummy,Persentase akses sanitasi layak dummy,persen,annual,BPS dummy
+03_bps_sosiodemografi_kecamatan_annual_dummy_2015_2025.csv,rumah_tangga_padat_huni_persen_dummy,Persentase rumah tangga padat huni dummy,persen,annual,BPS dummy
+03_bps_sosiodemografi_kecamatan_annual_dummy_2015_2025.csv,luas_permukiman_kumuh_persen_dummy,Persentase area/indikator permukiman kumuh dummy,persen,annual,BPS dummy
+03_bps_sosiodemografi_kecamatan_annual_dummy_2015_2025.csv,rata_lama_sekolah_tahun_dummy,Rata-rata lama sekolah dummy,tahun,annual,BPS dummy
+03_bps_sosiodemografi_kecamatan_annual_dummy_2015_2025.csv,tingkat_pengangguran_terbuka_persen_dummy,TPT dummy,persen,annual,BPS dummy
+04_faskes_kapasitas_skrining_kecamatan_static_dummy_2025.csv,jumlah_puskesmas_dummy,Jumlah puskesmas dummy per kecamatan,unit,static 2025,Faskes dummy
+04_faskes_kapasitas_skrining_kecamatan_static_dummy_2025.csv,jumlah_pustu_dummy,Jumlah puskesmas pembantu dummy per kecamatan,unit,static 2025,Faskes dummy
+04_faskes_kapasitas_skrining_kecamatan_static_dummy_2025.csv,jumlah_klinik_dummy,Jumlah klinik dummy per kecamatan,unit,static 2025,Faskes dummy
+04_faskes_kapasitas_skrining_kecamatan_static_dummy_2025.csv,jumlah_rs_dummy,Jumlah rumah sakit dummy per kecamatan,unit,static 2025,Faskes dummy
+04_faskes_kapasitas_skrining_kecamatan_static_dummy_2025.csv,akses_laboratorium_index_0_1_dummy,"Indeks dummy akses lab TB, 0 rendah sampai 1 tinggi",index,static 2025,Faskes dummy
+04_faskes_kapasitas_skrining_kecamatan_static_dummy_2025.csv,kapasitas_skrining_per_bulan_dummy,Estimasi kapasitas skrining TB per bulan,orang/bulan,static 2025,Faskes dummy
+04_faskes_kapasitas_skrining_kecamatan_static_dummy_2025.csv,kapasitas_kunjungan_rumah_per_bulan_dummy,Estimasi kapasitas kunjungan rumah per bulan,kunjungan/bulan,static 2025,Faskes dummy
+02_dinkes_tb_kecamatan_monthly_dummy_2015_2025.csv,source_flag,"Penanda bahwa data adalah dummy/sintetik, bukan data resmi.",text,all,dummy
+03_bps_sosiodemografi_kecamatan_annual_dummy_2015_2025.csv,source_flag,"Penanda bahwa data adalah dummy/sintetik, bukan data resmi.",text,all,dummy
+04_faskes_kapasitas_skrining_kecamatan_static_dummy_2025.csv,source_flag,"Penanda bahwa data adalah dummy/sintetik, bukan data resmi.",text,all,dummy

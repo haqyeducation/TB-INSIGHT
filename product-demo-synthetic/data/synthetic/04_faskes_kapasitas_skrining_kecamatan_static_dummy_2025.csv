@@ -1,0 +1,32 @@
+tahun_data,kecamatan_id,kecamatan,wilayah_surabaya,jumlah_puskesmas_dummy,jumlah_pustu_dummy,jumlah_klinik_dummy,jumlah_rs_dummy,akses_laboratorium_index_0_1_dummy,kapasitas_skrining_per_bulan_dummy,kapasitas_kunjungan_rumah_per_bulan_dummy,source_flag
+2025,35.78.01,Asemrowo,Surabaya Barat,1,2,3,0,0.55,338,105,DUMMY_FASKES
+2025,35.78.02,Benowo,Surabaya Barat,3,3,11,0,0.76,762,318,DUMMY_FASKES
+2025,35.78.03,Bubutan,Surabaya Pusat,1,2,9,0,0.58,371,198,DUMMY_FASKES
+2025,35.78.04,Bulak,Surabaya Utara,2,1,11,0,0.69,557,300,DUMMY_FASKES
+2025,35.78.05,Dukuh Pakis,Surabaya Selatan,3,3,15,3,1.0,1102,285,DUMMY_FASKES
+2025,35.78.06,Gayungan,Surabaya Selatan,1,2,9,0,0.62,435,177,DUMMY_FASKES
+2025,35.78.07,Genteng,Surabaya Pusat,2,2,11,3,0.99,946,423,DUMMY_FASKES
+2025,35.78.08,Gubeng,Surabaya Timur,3,3,11,2,1.0,1200,455,DUMMY_FASKES
+2025,35.78.09,Gunung Anyar,Surabaya Timur,2,1,10,0,0.66,533,159,DUMMY_FASKES
+2025,35.78.10,Jambangan,Surabaya Selatan,1,2,7,0,0.52,329,168,DUMMY_FASKES
+2025,35.78.11,Karang Pilang,Surabaya Selatan,1,2,3,0,0.52,348,170,DUMMY_FASKES
+2025,35.78.12,Kenjeran,Surabaya Utara,2,0,8,0,0.67,523,225,DUMMY_FASKES
+2025,35.78.13,Krembangan,Surabaya Utara,2,3,12,0,0.7,686,188,DUMMY_FASKES
+2025,35.78.14,Lakarsantri,Surabaya Barat,1,2,7,0,0.55,337,119,DUMMY_FASKES
+2025,35.78.15,Mulyorejo,Surabaya Timur,2,0,13,2,0.95,699,347,DUMMY_FASKES
+2025,35.78.16,Pabean Cantian,Surabaya Utara,2,3,9,0,0.64,559,157,DUMMY_FASKES
+2025,35.78.17,Pakal,Surabaya Barat,2,2,9,0,0.73,545,247,DUMMY_FASKES
+2025,35.78.18,Rungkut,Surabaya Timur,3,3,14,3,1.0,1411,385,DUMMY_FASKES
+2025,35.78.19,Sambikerep,Surabaya Barat,3,3,15,0,0.78,808,345,DUMMY_FASKES
+2025,35.78.20,Sawahan,Surabaya Selatan,2,1,11,3,1.0,810,217,DUMMY_FASKES
+2025,35.78.21,Semampir,Surabaya Utara,3,2,15,0,0.7,890,448,DUMMY_FASKES
+2025,35.78.22,Simokerto,Surabaya Pusat,3,1,11,0,0.7,759,412,DUMMY_FASKES
+2025,35.78.23,Sukolilo,Surabaya Timur,3,2,12,0,0.8,827,282,DUMMY_FASKES
+2025,35.78.24,Sukomanunggal,Surabaya Barat,1,2,6,0,0.63,380,182,DUMMY_FASKES
+2025,35.78.25,Tambaksari,Surabaya Timur,1,2,3,2,0.85,685,272,DUMMY_FASKES
+2025,35.78.26,Tandes,Surabaya Barat,1,3,6,0,0.51,410,198,DUMMY_FASKES
+2025,35.78.27,Tegalsari,Surabaya Pusat,1,2,7,0,0.6,414,158,DUMMY_FASKES
+2025,35.78.28,Tenggilis Mejoyo,Surabaya Timur,3,2,17,0,0.75,911,255,DUMMY_FASKES
+2025,35.78.29,Wiyung,Surabaya Selatan,2,2,8,0,0.65,602,277,DUMMY_FASKES
+2025,35.78.30,Wonocolo,Surabaya Selatan,2,0,8,0,0.7,438,216,DUMMY_FASKES
+2025,35.78.31,Wonokromo,Surabaya Selatan,2,1,8,1,0.84,571,232,DUMMY_FASKES

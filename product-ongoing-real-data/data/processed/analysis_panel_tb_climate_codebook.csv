@@ -1,0 +1,79 @@
+variable,definition,unit_or_type,source
+province_code,BPS/Kemendagri-style province code used in the project,identifier,SITB/BPS harmonisation
+province,Harmonised uppercase province name,identifier,SITB/BPS harmonisation
+year,Calendar year of TB treatment-start cohort month,time,SITB
+month,Calendar month 1-12,time,SITB
+period,Year-month key YYYY-MM,time,Derived
+jumlah_pasien,Patients starting drug-susceptible TB treatment in the month,count,SITB
+sembuh,Sembuh,see source,Source/derived
+pengobatan_lengkap,Pengobatan lengkap,see source,Source/derived
+lost_to_follow_up,Lost to follow up,see source,Source/derived
+meninggal,Meninggal,see source,Source/derived
+gagal,Gagal,see source,Source/derived
+tidak_dievaluasi_pindah,Tidak dievaluasi pindah,see source,Source/derived
+belum_ada_hasil,Belum ada hasil,see source,Source/derived
+outcome_sum,Outcome sum,see source,Source/derived
+outcome_balance,Outcome balance,see source,Source/derived
+known_outcome_count,Patients with a recorded outcome other than pending,count,Derived: jumlah_pasien - belum_ada_hasil
+pending_share,Share of cohort whose outcome is not yet available,proportion,Derived
+treatment_success,Cured plus treatment completed,count,Derived from SITB
+treatment_success_all_share,Treatment success divided by full cohort,proportion,Derived
+treatment_success_known_share,Treatment success divided by patients with known outcomes,proportion,Derived
+adverse_known_count,Lost to follow-up plus death plus failure,count,Derived
+adverse_known_share,Adverse known outcomes divided by known outcomes,proportion,Derived
+cohort_maturity_flag,Mature when pending outcome share is at most 5%,quality flag,Derived
+treatment_started_per_100k,"Monthly treatment starts per 100,000 mid-year population",rate,Derived
+log_population_offset,Natural log of population for count models,model offset,Derived
+population,Official projected mid-year population,persons,BPS
+population_density_per_km2,Population density,persons/km2,BPS
+population_reference_date,Population reference date,see source,Source/derived
+sanitation_access_pct,Households/population with access to adequate sanitation as reported by BPS table,percent,BPS
+sanitation_reference_period,Sanitation reference period,see source,Source/derived
+poverty_pct,"Percentage of poor population, March Susenas",percent,BPS
+poverty_reference_period,Poverty reference period,see source,Source/derived
+temperature_c,Monthly mean 2-metre air temperature,degrees C,NASA POWER/MERRA-2
+relative_humidity_pct,Monthly mean 2-metre relative humidity,percent,NASA POWER/MERRA-2
+precipitation_mm,Monthly precipitation total derived from monthly mean mm/day times calendar days,mm/month,NASA POWER/MERRA-2
+temperature_c_anomaly,Temperature c anomaly,see source,Source/derived
+temperature_c_z,Temperature anomaly z-score relative to province calendar-month 1991-2020 normal,z-score,Derived
+temperature_c_z_lag1,One-month lag of temperature_c_z,same as base variable,Derived
+temperature_c_z_lag2,Two-month lag of temperature_c_z,same as base variable,Derived
+temperature_c_z_mean_lag0_2,Mean of current and prior two months for temperature_c_z,same as base variable,Derived
+relative_humidity_pct_anomaly,Relative humidity pct anomaly,see source,Source/derived
+relative_humidity_pct_z,Humidity anomaly z-score relative to province calendar-month 1991-2020 normal,z-score,Derived
+relative_humidity_pct_z_lag1,One-month lag of relative_humidity_pct_z,same as base variable,Derived
+relative_humidity_pct_z_lag2,Two-month lag of relative_humidity_pct_z,same as base variable,Derived
+relative_humidity_pct_z_mean_lag0_2,Mean of current and prior two months for relative_humidity_pct_z,same as base variable,Derived
+precipitation_mm_anomaly,Precipitation mm anomaly,see source,Source/derived
+precipitation_mm_z,Precipitation anomaly z-score relative to province calendar-month 1991-2020 normal,z-score,Derived
+precipitation_mm_z_lag1,One-month lag of precipitation_mm_z,same as base variable,Derived
+precipitation_mm_z_lag2,Two-month lag of precipitation_mm_z,same as base variable,Derived
+precipitation_mm_z_mean_lag0_2,Mean of current and prior two months for precipitation_mm_z,same as base variable,Derived
+heavy_rain_anomaly,1 when precipitation anomaly is at least +1 SD,binary,Derived
+hot_anomaly,1 when temperature anomaly is at least +1 SD,binary,Derived
+climate_spatial_method,Climate spatial method,see source,Source/derived
+climate_grid_cells,Climate grid cells,see source,Source/derived
+event_record_count,Deduplicated BNPB operational disaster event records,count,BNPB operational table
+hydrometeorological_events,"Flood, landslide, extreme weather, drought, wildfire, and coastal-wave events",count,Derived from BNPB
+flood_events,Flood events,see source,Source/derived
+landslide_events,Landslide events,see source,Source/derived
+extreme_weather_events,Extreme weather events,see source,Source/derived
+drought_events,Drought events,see source,Source/derived
+wildfire_events,Wildfire events,see source,Source/derived
+coastal_wave_events,Coastal wave events,see source,Source/derived
+earthquake_events,Earthquake events,see source,Source/derived
+volcanic_eruption_events,Volcanic eruption events,see source,Source/derived
+tsunami_events,Tsunami events,see source,Source/derived
+has_any_impact_field,Has any impact field,see source,Source/derived
+deaths_reported_sum,Deaths reported sum,see source,Source/derived
+deaths_reported_records,Deaths reported records,see source,Source/derived
+injured_reported_sum,Injured reported sum,see source,Source/derived
+injured_reported_records,Injured reported records,see source,Source/derived
+houses_damaged_reported_sum,Houses damaged reported sum,see source,Source/derived
+houses_damaged_reported_records,Houses damaged reported records,see source,Source/derived
+houses_flooded_reported_sum,Houses flooded reported sum,see source,Source/derived
+houses_flooded_reported_records,Houses flooded reported records,see source,Source/derived
+disaster_quality_flag,Warning on disagreement with formal annual BNPB compilation,quality flag,Derived QA
+quality_flag,Quality flag,see source,Source/derived
+source_url,Source url,see source,Source/derived
+snapshot_retrieved_at,Snapshot retrieved at,see source,Source/derived

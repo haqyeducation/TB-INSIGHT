@@ -1,0 +1,54 @@
+{
+  "source": "Kementerian Kesehatan RI SITB public TB dashboard",
+  "raw_files": [
+    {
+      "year": 2024,
+      "file": "tb_treatment_outcomes_province_month_2024_raw.csv",
+      "rows": 456,
+      "sha256": "86d4ad8051bc1041d55871b7c84025669ca8ae06a7c22b0e6eaaf1befa6ecd83",
+      "source_url": "https://tbdashboard.sitb.id/ss_data_tbc03so_2024_provinsi_bulanan_list.php"
+    },
+    {
+      "year": 2025,
+      "file": "tb_treatment_outcomes_province_month_2025_raw.csv",
+      "rows": 456,
+      "sha256": "c0d0b1727c7a9acf20b71d9ac40e32dfa658ca703fda36e1f2dbeb3e2ba84c67",
+      "source_url": "https://tbdashboard.sitb.id/ss_data_tbc03so_2025_provinsi_bulanan_list.php"
+    }
+  ],
+  "years": [
+    2024,
+    2025
+  ],
+  "months_per_year": {
+    "2024": 12,
+    "2025": 12
+  },
+  "provinces_per_year": {
+    "2024": 38,
+    "2025": 38
+  },
+  "wide_rows": 912,
+  "long_rows": 7296,
+  "analysis_panel_rows": 912,
+  "analysis_panel_population_matched_rows": 912,
+  "indicators": [
+    "cured",
+    "died",
+    "failed",
+    "lost_to_follow_up",
+    "not_evaluated_or_transferred",
+    "outcome_pending",
+    "treatment_completed",
+    "treatment_started"
+  ],
+  "duplicate_province_month_rows": 0,
+  "negative_values": 0,
+  "outcome_balance_nonzero_rows": 0,
+  "outcome_balance_min": 0,
+  "outcome_balance_max": 0,
+  "province_name_corrected_rows": 1,
+  "province_name_correction_note": "One 2024 source row for province ID 37 was labelled Papua; canonical ID mapping resolves it to Papua Pegunungan without changing counts.",
+  "no_imputation": true,
+  "revision_warning": "Live dashboard snapshot; treatment outcomes can be revised after extraction."
+}

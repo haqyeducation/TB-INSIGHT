@@ -1,0 +1,32 @@
+=== EPIC 4: PREDICTIVE MODELING & EARLY WARNING SYSTEM ===
+
+--- MODEL EVALUATION ON VALIDATION SET (2024-2025) ---
+Model: Random Forest
+  RMSE: 11.18
+  MAE: 6.64
+  MAPE (%): 10.83
+
+Model: XGBoost
+  RMSE: 11.76
+  MAE: 6.83
+  MAPE (%): 10.62
+
+Model: ARIMA (Univariate)
+  RMSE: 12.89
+  MAE: 7.57
+  MAPE (%): 11.84
+
+--- EARLY WARNING SYSTEM (Q1 2026) ---
+WARNING: 11 Kecamatan terdeteksi berpotensi lonjakan kasus!
+     kecamatan  avg_pred_Q1  baseline_2025_avg
+        GUBENG       103.33              92.50
+      KENJERAN       150.33             158.00
+    KREMBANGAN       143.67             152.00
+PABEAN CANTIAN       141.00             144.50
+       SAWAHAN       104.00              98.50
+      SEMAMPIR       192.67             194.50
+     SIMOKERTO       189.33             184.33
+      SUKOLILO        82.33              81.33
+    TAMBAKSARI        63.00              60.67
+     TEGALSARI       101.00              83.33
+     WONOKROMO        97.67              82.50

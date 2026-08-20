@@ -1,0 +1,77 @@
+province_code_bnpb_workbook,province,year,annual_official_total_events,BANJIR,CUACA EKSTREM,ERUPSI GUNUNG API,GELOMBANG PASANG DAN ABRASI,GEMPABUMI,KEBAKARAN HUTAN DAN LAHAN,KEKERINGAN,TANAH LONGSOR,TSUNAMI,province_code,event_record_count,difference_operational_minus_annual,agreement_flag
+11,ACEH,2024,99,47,14,0,0,0,35,1,2,0,11,99,0,match
+11,ACEH,2025,168,48,21,0,1,1,94,0,3,0,11,140,-28,different_definition_or_snapshot
+12,SUMATERA UTARA,2024,350,120,43,0,0,0,170,2,15,0,12,361,11,different_definition_or_snapshot
+12,SUMATERA UTARA,2025,336,97,68,0,1,1,155,8,6,0,12,225,-111,different_definition_or_snapshot
+13,SUMATERA BARAT,2024,98,64,10,3,3,0,7,1,10,0,13,100,2,different_definition_or_snapshot
+13,SUMATERA BARAT,2025,135,37,15,0,2,0,75,1,5,0,13,82,-53,different_definition_or_snapshot
+14,RIAU,2024,68,53,2,0,2,0,10,0,1,0,14,68,0,match
+14,RIAU,2025,396,104,5,0,0,0,287,0,0,0,14,286,-110,different_definition_or_snapshot
+15,JAMBI,2024,132,44,7,0,0,0,79,0,2,0,15,133,1,different_definition_or_snapshot
+15,JAMBI,2025,103,29,9,0,0,0,64,0,1,0,15,45,-58,different_definition_or_snapshot
+16,SUMATERA SELATAN,2024,271,69,9,0,0,0,192,0,1,0,16,277,6,different_definition_or_snapshot
+16,SUMATERA SELATAN,2025,135,71,14,0,0,0,47,0,3,0,16,118,-17,different_definition_or_snapshot
+17,BENGKULU,2024,18,9,3,0,0,1,1,0,4,0,17,18,0,match
+17,BENGKULU,2025,21,15,0,0,1,1,2,0,2,0,17,20,-1,different_definition_or_snapshot
+18,LAMPUNG,2024,60,28,24,0,0,0,7,1,0,0,18,60,0,match
+18,LAMPUNG,2025,153,106,43,0,0,1,0,0,3,0,18,123,-30,different_definition_or_snapshot
+19,KEP. BANGKA BELITUNG,2024,24,2,3,0,0,0,19,0,0,0,19,24,0,match
+19,KEP. BANGKA BELITUNG,2025,57,20,21,0,0,0,15,0,1,0,19,18,-39,different_definition_or_snapshot
+21,KEPULAUAN RIAU,2024,79,4,16,0,0,0,58,0,1,0,21,79,0,match
+21,KEPULAUAN RIAU,2025,109,8,22,0,1,0,75,0,3,0,21,9,-100,different_definition_or_snapshot
+31,DKI JAKARTA,2024,23,17,5,0,0,0,0,0,1,0,31,28,5,different_definition_or_snapshot
+31,DKI JAKARTA,2025,36,31,5,0,0,0,0,0,0,0,31,39,3,different_definition_or_snapshot
+32,JAWA BARAT,2024,457,140,193,0,1,5,16,25,77,0,32,503,46,different_definition_or_snapshot
+32,JAWA BARAT,2025,586,229,235,0,0,4,2,5,111,0,32,491,-95,different_definition_or_snapshot
+33,JAWA TENGAH,2024,231,78,71,0,0,3,38,22,19,0,33,235,4,different_definition_or_snapshot
+33,JAWA TENGAH,2025,335,140,119,0,0,1,19,11,45,0,33,343,8,different_definition_or_snapshot
+34,DI YOGYAKARTA,2024,62,0,38,0,0,1,15,3,5,0,34,114,52,different_definition_or_snapshot
+34,DI YOGYAKARTA,2025,55,10,32,0,0,0,4,0,9,0,34,29,-26,different_definition_or_snapshot
+35,JAWA TIMUR,2024,434,121,141,0,0,2,145,11,14,0,35,461,27,different_definition_or_snapshot
+35,JAWA TIMUR,2025,390,184,146,3,0,3,25,3,26,0,35,349,-41,different_definition_or_snapshot
+36,BANTEN,2024,97,66,17,0,0,1,4,2,7,0,36,97,0,match
+36,BANTEN,2025,115,93,12,0,0,0,1,1,8,0,36,71,-44,different_definition_or_snapshot
+51,BALI,2024,35,2,17,0,0,1,11,0,4,0,51,37,2,different_definition_or_snapshot
+51,BALI,2025,52,9,26,0,4,1,8,0,4,0,51,41,-11,different_definition_or_snapshot
+52,NUSA TENGGARA BARAT,2024,77,44,17,0,2,1,3,9,1,0,52,77,0,match
+52,NUSA TENGGARA BARAT,2025,132,95,25,0,1,0,2,7,2,0,52,118,-14,different_definition_or_snapshot
+53,NUSA TENGGARA TIMUR,2024,53,13,13,3,4,0,14,1,5,0,53,54,1,different_definition_or_snapshot
+53,NUSA TENGGARA TIMUR,2025,95,43,10,3,1,0,23,0,15,0,53,63,-32,different_definition_or_snapshot
+61,KALIMANTAN BARAT,2024,69,56,3,0,0,0,10,0,0,0,61,69,0,match
+61,KALIMANTAN BARAT,2025,39,28,2,0,0,0,9,0,0,0,61,43,4,different_definition_or_snapshot
+62,KALIMANTAN TENGAH,2024,56,39,0,0,0,0,17,0,0,0,62,56,0,match
+62,KALIMANTAN TENGAH,2025,214,58,3,0,0,0,151,0,2,0,62,134,-80,different_definition_or_snapshot
+63,KALIMANTAN SELATAN,2024,26,15,4,0,0,0,6,0,1,0,63,26,0,match
+63,KALIMANTAN SELATAN,2025,276,46,8,0,2,0,220,0,0,0,63,65,-211,different_definition_or_snapshot
+64,KALIMANTAN TIMUR,2024,144,29,4,0,1,0,107,0,3,0,64,219,75,different_definition_or_snapshot
+64,KALIMANTAN TIMUR,2025,96,53,3,0,1,0,22,1,16,0,64,50,-46,different_definition_or_snapshot
+65,KALIMANTAN UTARA,2024,10,5,0,0,0,0,3,0,2,0,65,10,0,match
+65,KALIMANTAN UTARA,2025,42,15,0,0,0,2,23,0,2,0,65,25,-17,different_definition_or_snapshot
+71,SULAWESI UTARA,2024,23,17,3,1,1,0,0,0,1,0,71,23,0,match
+71,SULAWESI UTARA,2025,38,30,3,0,0,1,1,0,3,0,71,36,-2,different_definition_or_snapshot
+72,SULAWESI TENGAH,2024,94,85,4,0,0,2,2,0,1,0,72,94,0,match
+72,SULAWESI TENGAH,2025,135,103,14,0,7,4,2,0,5,0,72,127,-8,different_definition_or_snapshot
+73,SULAWESI SELATAN,2024,165,91,45,0,2,0,3,10,14,0,73,176,11,different_definition_or_snapshot
+73,SULAWESI SELATAN,2025,147,63,65,0,2,0,3,0,14,0,73,130,-17,different_definition_or_snapshot
+74,SULAWESI TENGGARA,2024,20,17,3,0,0,0,0,0,0,0,74,20,0,match
+74,SULAWESI TENGGARA,2025,59,43,6,0,1,3,0,0,6,0,74,18,-41,different_definition_or_snapshot
+75,GORONTALO,2024,35,31,1,0,0,0,0,1,2,0,75,36,1,different_definition_or_snapshot
+75,GORONTALO,2025,71,65,4,0,0,0,0,0,1,1,75,40,-31,different_definition_or_snapshot
+76,SULAWESI BARAT,2024,22,15,4,0,0,0,0,0,3,0,76,22,0,match
+76,SULAWESI BARAT,2025,27,15,5,0,0,0,0,0,7,0,76,18,-9,different_definition_or_snapshot
+81,MALUKU,2024,36,18,11,0,3,0,1,0,3,0,81,36,0,match
+81,MALUKU,2025,51,32,4,0,1,2,0,0,12,0,81,29,-22,different_definition_or_snapshot
+82,MALUKU UTARA,2024,55,40,6,1,3,1,0,0,4,0,82,56,1,different_definition_or_snapshot
+82,MALUKU UTARA,2025,78,59,11,1,2,0,0,0,5,0,82,56,-22,different_definition_or_snapshot
+92,PAPUA BARAT,2024,18,15,0,0,2,0,0,0,1,0,91,18,0,match
+92,PAPUA BARAT,2025,9,7,2,0,0,0,0,0,0,0,91,7,-2,different_definition_or_snapshot
+96,PAPUA BARAT DAYA,2024,4,4,0,0,0,0,0,0,0,0,92,4,0,match
+96,PAPUA BARAT DAYA,2025,5,3,0,0,0,0,0,0,2,0,92,5,0,match
+91,PAPUA,2024,19,15,2,0,2,0,0,0,0,0,94,19,0,match
+91,PAPUA,2025,17,12,0,0,0,3,0,0,2,0,94,15,-2,different_definition_or_snapshot
+93,PAPUA SELATAN,2024,3,2,0,0,1,0,0,0,0,0,95,3,0,match
+93,PAPUA SELATAN,2025,1,1,0,0,0,0,0,0,0,0,95,1,0,match
+94,PAPUA TENGAH,2024,5,5,0,0,0,0,0,0,0,0,96,5,0,match
+94,PAPUA TENGAH,2025,4,1,0,0,0,1,0,0,2,0,96,4,0,match
+95,PAPUA PEGUNUNGAN,2024,3,0,0,0,0,0,0,0,3,0,97,3,0,match
+95,PAPUA PEGUNUNGAN,2025,10,6,0,0,0,0,0,0,4,0,97,10,0,match

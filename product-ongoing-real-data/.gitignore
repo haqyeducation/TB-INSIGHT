@@ -1,0 +1,20 @@
+# Python
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.venv/
+venv/
+
+# Node/Vite
+frontend/node_modules/
+frontend/dist/
+frontend/.npm-cache/
+
+# Local tools and temporary files
+.codex_tmp/
+*.log
+*.tmp
+
+# Generated archives
+*.zip
+*.tar

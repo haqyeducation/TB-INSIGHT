@@ -1,0 +1,12 @@
+{
+  "raw_files": 16,
+  "successful_files": 16,
+  "failed_files": [],
+  "monthly_rows": 168,
+  "period_min": "2023-01",
+  "period_max": "2026-06",
+  "geographic_level": "national",
+  "province_month_rows": 7296,
+  "province_month_status": "managed_by_prepare_sitb_province_month.py",
+  "no_imputation_or_geographic_reconstruction": true
+}

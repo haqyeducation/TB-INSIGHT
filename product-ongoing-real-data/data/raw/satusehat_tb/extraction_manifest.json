@@ -1,0 +1,106 @@
+{
+  "extractedAt": "2026-08-12T14:08:30.483Z",
+  "publisher": "Kementerian Kesehatan RI",
+  "sourceSystem": "SITB via SATUSEHAT Data public Tableau dashboard",
+  "baseUrl": "https://dashboard.kemkes.go.id/views/DashboardTB/DashboardTB?:showVizHome=no",
+  "geographicLevel": "national",
+  "provinceExportStatus": "unavailable_public_dashboard_returns_blank_province_fields",
+  "results": [
+    {
+      "indicator": "suspected",
+      "year": 2023,
+      "status": "cached",
+      "destination": "C:\\Users\\haqyb\\Kuliah Serius\\TB-INSIGHT\\data\\raw\\satusehat_tb\\2023_national_suspected.csv"
+    },
+    {
+      "indicator": "tested",
+      "year": 2023,
+      "status": "cached",
+      "destination": "C:\\Users\\haqyb\\Kuliah Serius\\TB-INSIGHT\\data\\raw\\satusehat_tb\\2023_national_tested.csv"
+    },
+    {
+      "indicator": "notified",
+      "year": 2023,
+      "status": "cached",
+      "destination": "C:\\Users\\haqyb\\Kuliah Serius\\TB-INSIGHT\\data\\raw\\satusehat_tb\\2023_national_notified.csv"
+    },
+    {
+      "indicator": "treated",
+      "year": 2023,
+      "status": "cached",
+      "destination": "C:\\Users\\haqyb\\Kuliah Serius\\TB-INSIGHT\\data\\raw\\satusehat_tb\\2023_national_treated.csv"
+    },
+    {
+      "indicator": "notified",
+      "year": 2024,
+      "status": "downloaded",
+      "destination": "C:\\Users\\haqyb\\Kuliah Serius\\TB-INSIGHT\\data\\raw\\satusehat_tb\\2024_national_notified.csv"
+    },
+    {
+      "indicator": "suspected",
+      "year": 2025,
+      "status": "cached",
+      "destination": "C:\\Users\\haqyb\\Kuliah Serius\\TB-INSIGHT\\data\\raw\\satusehat_tb\\2025_national_suspected.csv"
+    },
+    {
+      "indicator": "tested",
+      "year": 2025,
+      "status": "cached",
+      "destination": "C:\\Users\\haqyb\\Kuliah Serius\\TB-INSIGHT\\data\\raw\\satusehat_tb\\2025_national_tested.csv"
+    },
+    {
+      "indicator": "notified",
+      "year": 2025,
+      "status": "cached",
+      "destination": "C:\\Users\\haqyb\\Kuliah Serius\\TB-INSIGHT\\data\\raw\\satusehat_tb\\2025_national_notified.csv"
+    },
+    {
+      "indicator": "treated",
+      "year": 2025,
+      "status": "cached",
+      "destination": "C:\\Users\\haqyb\\Kuliah Serius\\TB-INSIGHT\\data\\raw\\satusehat_tb\\2025_national_treated.csv"
+    },
+    {
+      "indicator": "suspected",
+      "year": 2026,
+      "status": "cached",
+      "destination": "C:\\Users\\haqyb\\Kuliah Serius\\TB-INSIGHT\\data\\raw\\satusehat_tb\\2026_national_suspected.csv"
+    },
+    {
+      "indicator": "treated",
+      "year": 2024,
+      "status": "downloaded",
+      "destination": "C:\\Users\\haqyb\\Kuliah Serius\\TB-INSIGHT\\data\\raw\\satusehat_tb\\2024_national_treated.csv"
+    },
+    {
+      "indicator": "tested",
+      "year": 2024,
+      "status": "downloaded",
+      "destination": "C:\\Users\\haqyb\\Kuliah Serius\\TB-INSIGHT\\data\\raw\\satusehat_tb\\2024_national_tested.csv"
+    },
+    {
+      "indicator": "suspected",
+      "year": 2024,
+      "status": "downloaded",
+      "destination": "C:\\Users\\haqyb\\Kuliah Serius\\TB-INSIGHT\\data\\raw\\satusehat_tb\\2024_national_suspected.csv"
+    },
+    {
+      "indicator": "tested",
+      "year": 2026,
+      "status": "downloaded",
+      "destination": "C:\\Users\\haqyb\\Kuliah Serius\\TB-INSIGHT\\data\\raw\\satusehat_tb\\2026_national_tested.csv"
+    },
+    {
+      "indicator": "notified",
+      "year": 2026,
+      "status": "downloaded",
+      "destination": "C:\\Users\\haqyb\\Kuliah Serius\\TB-INSIGHT\\data\\raw\\satusehat_tb\\2026_national_notified.csv"
+    },
+    {
+      "indicator": "treated",
+      "year": 2026,
+      "status": "downloaded",
+      "destination": "C:\\Users\\haqyb\\Kuliah Serius\\TB-INSIGHT\\data\\raw\\satusehat_tb\\2026_national_treated.csv"
+    }
+  ]
+}

@@ -1,0 +1,32 @@
+{
+  "raw_rows": 7164,
+  "exact_duplicate_substantive_rows_removed": 21,
+  "curated_event_rows": 7143,
+  "panel_rows": 912,
+  "provinces": 38,
+  "periods": 24,
+  "duplicate_panel_keys": 0,
+  "unmatched_provinces": [],
+  "operational_event_totals": {
+    "2024": 3720,
+    "2025": 3423
+  },
+  "official_annual_workbook_totals": {
+    "2024": 3475,
+    "2025": 4728
+  },
+  "annual_province_totals_matching": 27,
+  "annual_province_totals_compared": 76,
+  "notes": [
+    "Operational rows were retrieved with event dates 2024-01-01 through 2025-12-31.",
+    "Exact duplicates across all substantive HTML fields were removed; row_number was excluded from duplicate detection.",
+    "Annual workbooks use BNPB's formal event-threshold compilation and are retained as benchmarks, not used to overwrite monthly operational counts.",
+    "Impact blanks remain missing in reported sums; reported-record counts quantify completeness.",
+    "Use disaster variables as secondary/sensitivity covariates because monthly operational totals do not fully reconcile with annual workbooks."
+  ],
+  "source_url": "https://gis.bnpb.go.id/databencana/tabel/pencarian.php",
+  "annual_source_urls": {
+    "2024": "https://data.bnpb.go.id/dataset/f61d78e5-04c6-4ce8-9acf-e425dadc1f4d/resource/faeb2406-b800-4b8e-9e09-37d4b2aa5879/download/jumlah-kejadian-bencana-menurut-provinsi-2024.xlsx",
+    "2025": "https://data.bnpb.go.id/dataset/58878b43-41b5-4ffb-b851-c6d8c8c4d438/resource/df39e8c3-117e-40fa-b518-ff1037743955/download/jumlah-kejadian-bencana-menurut-provinsi-2025.xlsx"
+  }
+}

@@ -1,0 +1,62 @@
+=== EPIC 2: EDA & RISK FACTOR ANALYSIS SUMMARY ===
+
+--- T-205: HIGH-BURDEN KECAMATAN (TOP 5) ---
+kecamatan_id  kasus_tb_total_dummy  kasus_tb_anak_dummy  tb_dm_agregat_dummy  tb_hiv_agregat_dummy  kepadatan_penduduk_per_km2_dummy  persentase_kemiskinan_dummy  akses_sanitasi_layak_persen_dummy
+    35.78.21                 10526                  953                 1210                   472                      24193.454545                    11.231818                          79.709091
+    35.78.22                  9474                  709                 1105                   433                      27990.354545                     5.252727                          92.221818
+    35.78.12                  8502                  754                  976                   389                      22079.072727                     6.976364                          81.245455
+    35.78.13                  8363                  620                  976                   376                      20260.109091                    11.005455                          87.795455
+    35.78.16                  7735                  582                  906                   358                      19303.036364                     7.602727                          84.581818
+
+--- T-205: LOW-BURDEN KECAMATAN (BOTTOM 5) ---
+kecamatan_id  kasus_tb_total_dummy  kasus_tb_anak_dummy  tb_dm_agregat_dummy  tb_hiv_agregat_dummy  kepadatan_penduduk_per_km2_dummy  persentase_kemiskinan_dummy  akses_sanitasi_layak_persen_dummy
+    35.78.09                  2321                  159                  267                   117                       7748.754545                     3.917273                          91.287273
+    35.78.06                  2290                  163                  275                   112                       9702.581818                     3.367273                          97.219091
+    35.78.24                  2049                  150                  244                   100                       4592.754545                     7.969091                          95.442727
+    35.78.01                  2044                  150                  239                    97                       4603.809091                     4.695455                          84.840909
+    35.78.14                  1641                  133                  191                    67                       6715.509091                     4.470909                          96.348182
+
+--- T-206 sd T-208: CORRELATION MATRIX ---
+                                   kasus_tb_total_dummy  kepadatan_penduduk_per_km2_dummy  persentase_kemiskinan_dummy  akses_sanitasi_layak_persen_dummy
+kasus_tb_total_dummy                           1.000000                          0.828479                     0.491499                          -0.429846
+kepadatan_penduduk_per_km2_dummy               0.828479                          1.000000                     0.235566                          -0.312060
+persentase_kemiskinan_dummy                    0.491499                          0.235566                     1.000000                          -0.281239
+akses_sanitasi_layak_persen_dummy             -0.429846                         -0.312060                    -0.281239                           1.000000
+
+--- T-209: MULTIPLE LINEAR REGRESSION (OLS) ---
+                             OLS Regression Results                             
+================================================================================
+Dep. Variable:     kasus_tb_total_dummy   R-squared:                       0.792
+Model:                              OLS   Adj. R-squared:                  0.769
+Method:                   Least Squares   F-statistic:                     34.37
+Date:                  Sat, 09 May 2026   Prob (F-statistic):           2.30e-09
+Time:                          16:09:44   Log-Likelihood:                -257.84
+No. Observations:                    31   AIC:                             523.7
+Df Residuals:                        27   BIC:                             529.4
+Df Model:                             3                                         
+Covariance Type:              nonrobust                                         
+=====================================================================================================
+                                        coef    std err          t      P>|t|      [0.025      0.975]
+-----------------------------------------------------------------------------------------------------
+const                              3726.9241   4080.369      0.913      0.369   -4645.302    1.21e+04
+kepadatan_penduduk_per_km2_dummy      0.2609      0.034      7.725      0.000       0.192       0.330
+persentase_kemiskinan_dummy         311.4931    100.651      3.095      0.005     104.974     518.012
+akses_sanitasi_layak_persen_dummy   -54.2803     41.503     -1.308      0.202    -139.438      30.877
+==============================================================================
+Omnibus:                        0.671   Durbin-Watson:                   1.518
+Prob(Omnibus):                  0.715   Jarque-Bera (JB):                0.754
+Skew:                          -0.281   Prob(JB):                        0.686
+Kurtosis:                       2.483   Cond. No.                     3.41e+05
+==============================================================================
+
+Notes:
+[1] Standard Errors assume that the covariance matrix of the errors is correctly specified.
+[2] The condition number is large, 3.41e+05. This might indicate that there are
+strong multicollinearity or other numerical problems.
+
+--- T-210: FEATURE IMPORTANCE ---
+                          Feature  Importance
+ kepadatan_penduduk_per_km2_dummy    0.698063
+akses_sanitasi_layak_persen_dummy    0.152852
+      persentase_kemiskinan_dummy    0.149085
+
