@@ -1,121 +1,101 @@
-import { useEffect, useMemo, useState } from 'react';
-import axios from 'axios';
-import {
-  AlertCircle, Database, ExternalLink, FileCheck2,
-  LineChart as LineChartIcon, MapPinned, ShieldCheck,
-} from 'lucide-react';
-import {
-  Bar, BarChart, CartesianGrid, Legend, Line, LineChart,
-  ResponsiveContainer, Tooltip, XAxis, YAxis,
-} from 'recharts';
+import { useEffect, useRef, useState } from 'react';
+import { Activity, BookOpen, Database, LayoutDashboard, LineChart, Map, MapPin, RefreshCw } from 'lucide-react';
+import { Empty, Note } from './components';
+import { Overview, Trends, Maps, Province, Methods, Sources } from './pages';
+import ProvinceMap from './ProvinceMap';
+import Filters from './Filters';
+import { useSnapshot } from './hooks';
+import { downloadRows, monthLabel, LAYERS } from './data';
 
-const API = import.meta.env.VITE_API_BASE_URL || '/api';
-const nf = new Intl.NumberFormat('id-ID');
-const pct = (value) => value == null ? '—' : `${nf.format(value)}%`;
-const indicatorLabels = {
-  suspected: 'Terduga', tested: 'Testing', notified: 'Notifikasi kasus', treated: 'Memulai pengobatan',
-};
-const colors = { suspected: '#0f766e', tested: '#2563eb', notified: '#dc2626', treated: '#7c3aed' };
-
-function App() {
-  const [data, setData] = useState(null);
-  const [error, setError] = useState('');
-  const [trendYear, setTrendYear] = useState(2024);
-  const [bpsYear, setBpsYear] = useState(2024);
-
-  useEffect(() => {
-    Promise.all([
-      axios.get(`${API}/summary`), axios.get(`${API}/tb/national-monthly`),
-      axios.get(`${API}/analysis/province-2024`), axios.get(`${API}/bps/province-annual`),
-      axios.get(`${API}/metadata`),
-    ])
-      .then(([summary, monthly, province, bps, metadata]) => setData({
-        summary: summary.data, monthly: monthly.data, province: province.data,
-        bps: bps.data, metadata: metadata.data,
-      }))
-      .catch((requestError) => setError(requestError.response?.data?.detail || requestError.message));
-  }, []);
-
-  const trend = useMemo(() => {
-    if (!data) return [];
-    const rows = data.monthly.filter((row) => Number(row.year) === trendYear);
-    return [...new Set(rows.map((row) => row.period))].sort().map((period) => {
-      const point = { period: period.slice(5) };
-      rows.filter((row) => row.period === period).forEach((row) => { point[row.indicator] = row.value; });
-      return point;
-    });
-  }, [data, trendYear]);
-
-  const provinceRows = useMemo(() => data
-    ? [...data.province].sort((a, b) => b.tb_cases_total - a.tb_cases_total)
-    : [], [data]);
-  const bpsRows = useMemo(() => data
-    ? data.bps.filter((row) => Number(row.year) === bpsYear).sort((a, b) => b.population - a.population)
-    : [], [data, bpsYear]);
-
-  if (error) return <main className="center-state"><AlertCircle /><h1>Data belum dapat dimuat</h1><p>{error}</p></main>;
-  if (!data) return <main className="center-state"><Database className="pulse" /><h1>Memuat data resmi…</h1></main>;
-
-  const topTen = provinceRows.slice(0, 10).map((row) => ({ province: row.province, cases: row.tb_cases_total }));
-
-  return (
-    <div className="app-shell">
-      <header className="topbar">
-        <a className="brand" href="#overview"><span className="brand-mark">TB</span><span>TB-INSIGHT<small>Indonesia · data resmi</small></span></a>
-        <nav><a href="#trend">Tren nasional</a><a href="#province">Provinsi</a><a href="#bps">BPS</a><a href="#sources">Sumber</a></nav>
-      </header>
-
-      <main>
-        <section className="hero" id="overview">
-          <div>
-            <span className="eyebrow"><ShieldCheck size={16}/> Dataset terverifikasi</span>
-            <h1>Pemantauan TBC Indonesia berbasis data pemerintah</h1>
-            <p>Seri nasional bulanan SITB, indikator provinsi Kemenkes, dan kovariat resmi BPS. Setiap periode dan keterbatasan dipertahankan tanpa imputasi geografis.</p>
-          </div>
-          <div className="hero-status">
-            <FileCheck2 size={22}/><div><strong>Provinsi-bulanan resmi sudah tersedia</strong><span>{data.summary.province_month_status}. Interpretasikan sebagai kohort mulai pengobatan, bukan insidensi.</span></div>
-          </div>
-        </section>
-
-        <section className="stats-grid">
-          <article><FileCheck2/><span>Kasus TBC 2024</span><strong>{nf.format(data.summary.tb_cases_2024)}</strong><small>Kemenkes · 38 provinsi</small></article>
-          <article><MapPinned/><span>Cakupan wilayah</span><strong>{data.summary.province_count} provinsi</strong><small>Bulanan 2024-2025</small></article>
-          <article><LineChartIcon/><span>Seri nasional</span><strong>{data.summary.national_month_indicators} indikator</strong><small>{data.summary.national_month_period_min}—{data.summary.national_month_period_max}</small></article>
-          <article><Database/><span>Kovariat BPS</span><strong>2023—2026</strong><small>Periode asli dipertahankan</small></article>
-        </section>
-
-        <section className="panel" id="trend">
-          <div className="section-heading"><div><span className="eyebrow">SITB · nasional bulanan</span><h2>Alur penemuan dan pengobatan TBC</h2><p>Nilai bulanan hasil ekspor crosstab Dashboard TB Kemenkes.</p></div><label>Tahun<select value={trendYear} onChange={(event) => setTrendYear(Number(event.target.value))}>{[2023, 2024, 2025, 2026].map((year) => <option key={year}>{year}</option>)}</select></label></div>
-          <div className="chart-wrap"><ResponsiveContainer width="100%" height="100%"><LineChart data={trend}><CartesianGrid strokeDasharray="3 3" vertical={false}/><XAxis dataKey="period"/><YAxis tickFormatter={(value) => `${Math.round(value / 1000)}k`}/><Tooltip formatter={(value, name) => [nf.format(value), indicatorLabels[name]]}/><Legend formatter={(name) => indicatorLabels[name]}/>{Object.keys(indicatorLabels).map((key) => <Line key={key} type="monotone" dataKey={key} stroke={colors[key]} strokeWidth={3} dot={{ r: 3 }} connectNulls={false} isAnimationActive={false}/>)}</LineChart></ResponsiveContainer></div>
-          {trendYear === 2026 && <p className="footnote">Seri 2026 pada sumber publik tersedia sampai Juni 2026; jangan membandingkan total tahun berjalan langsung dengan total tahun penuh.</p>}
-        </section>
-
-        <section className="two-column" id="province">
-          <article className="panel">
-            <div className="section-heading compact"><div><span className="eyebrow">Kemenkes · 2024</span><h2>10 provinsi dengan kasus terbanyak</h2></div></div>
-            <div className="chart-wrap tall"><ResponsiveContainer width="100%" height="100%"><BarChart data={topTen} layout="vertical" margin={{ left: 42 }}><CartesianGrid strokeDasharray="3 3" horizontal={false}/><XAxis type="number" tickFormatter={(value) => `${Math.round(value / 1000)}k`}/><YAxis type="category" dataKey="province" width={112} tick={{ fontSize: 11 }}/><Tooltip formatter={(value) => nf.format(value)}/><Bar dataKey="cases" fill="#0f766e" radius={[0, 6, 6, 0]} isAnimationActive={false}/></BarChart></ResponsiveContainer></div>
-          </article>
-          <article className="panel table-panel">
-            <div className="section-heading compact"><div><span className="eyebrow">Panel analisis · 2024</span><h2>TB dan konteks BPS</h2></div></div>
-            <div className="table-scroll"><table><thead><tr><th>Provinsi</th><th>Kasus</th><th>CNR/100k</th><th>TC</th><th>Penduduk</th><th>Kepadatan</th><th>Sanitasi</th></tr></thead><tbody>{provinceRows.map((row) => <tr key={row.province_code}><td>{row.province}</td><td>{nf.format(row.tb_cases_total)}</td><td>{nf.format(row.case_notification_rate_per_100k)}</td><td>{pct(row.treatment_coverage_pct)}</td><td>{nf.format(row.population)}</td><td>{nf.format(row.population_density_per_km2)}</td><td>{pct(row.sanitation_access_pct)}</td></tr>)}</tbody></table></div>
-          </article>
-        </section>
-
-        <section className="panel table-panel" id="bps">
-          <div className="section-heading"><div><span className="eyebrow">BPS · 38 provinsi</span><h2>Kovariat sosial-demografi</h2><p>Populasi dan kepadatan adalah proyeksi pertengahan tahun. Kemiskinan dan sanitasi mengikuti periode survei yang tercantum.</p></div><label>Tahun<select value={bpsYear} onChange={(event) => setBpsYear(Number(event.target.value))}>{[2023, 2024, 2025, 2026].map((year) => <option key={year}>{year}</option>)}</select></label></div>
-          <div className="table-scroll bps-table"><table><thead><tr><th>Provinsi</th><th>Penduduk</th><th>Jiwa/km²</th><th>Akses sanitasi</th><th>Kemiskinan</th><th>Periode rujukan</th></tr></thead><tbody>{bpsRows.map((row) => <tr key={`${row.province_code}-${row.year}`}><td>{row.province}</td><td>{nf.format(row.population)}</td><td>{nf.format(row.population_density_per_km2)}</td><td>{pct(row.sanitation_access_pct)}</td><td>{pct(row.poverty_pct)}</td><td>{row.poverty_reference_period || row.sanitation_reference_period || row.population_reference_date}</td></tr>)}</tbody></table></div>
-          <p className="footnote">Tanda “—” berarti indikator tersebut tidak tersedia untuk periode itu; nilai tidak diisi dengan interpolasi.</p>
-        </section>
-
-        <section className="panel" id="sources">
-          <div className="section-heading compact"><div><span className="eyebrow">Provenance</span><h2>Sumber dan batas penggunaan</h2></div></div>
-          <div className="source-grid">{data.metadata.sources.map((source) => <a key={source.dataset} href={source.url} target="_blank" rel="noreferrer"><Database/><div><strong>{source.dataset}</strong><span>{source.publisher}</span><small>{source.coverage}</small></div><ExternalLink size={17}/></a>)}</div>
-          <div className="limitations"><h3><AlertCircle size={18}/> Batas interpretasi</h3><ul>{data.metadata.limitations.map((item) => <li key={item}>{item}</li>)}</ul></div>
-        </section>
-      </main>
-      <footer>TB-INSIGHT · pipeline reproducible untuk data resmi Kemenkes dan BPS</footer>
-    </div>
-  );
+const NAV = [
+  ['overview', 'Ringkasan', LayoutDashboard], ['trend', 'Tren', LineChart],
+  ['map', 'Peta', Map], ['province', 'Provinsi', MapPin],
+  ['methods', 'Metode', BookOpen], ['sources', 'Sumber', Database],
+];
+function readRoute() {
+  const [path = '/overview', query = ''] = window.location.hash.slice(1).split('?');
+  return { ...Object.fromEntries(new URLSearchParams(query)), page: NAV.some(([id]) => '/' + id === path) ? path.slice(1) : 'overview' };
 }
+function setRoute(route, { replace = false } = {}) {
+  const { page, ...filters } = route;
+  const query = new URLSearchParams(Object.entries(filters).filter(([, value]) => value != null && value !== '')).toString();
+  const hash = `#/${page}${query ? '?' + query : ''}`;
+  if (replace) {
+    window.history.replaceState(null, '', hash);
+    window.dispatchEvent(new HashChangeEvent('hashchange'));
+  } else window.location.hash = hash;
+}
+export default function App() {
+  const snapshot = useSnapshot();
+  const [route, setCurrentRoute] = useState(readRoute);
+  const [filtersOpen, setFiltersOpen] = useState(() => window.innerWidth >= 768);
+  const previousPage = useRef(route.page);
+  useEffect(() => {
+    const sync = () => {
+      const next = readRoute();
+      if (next.page !== previousPage.current) window.scrollTo({ top: 0 });
+      previousPage.current = next.page;
+      setCurrentRoute(next);
+    };
+    window.addEventListener('hashchange', sync);
+    return () => window.removeEventListener('hashchange', sync);
+  }, []);
+  const data = snapshot.data;
+  const periods = data?.meta.periods || [];
+  const start = periods.includes(route.start) ? route.start : periods[0];
+  const end = periods.includes(route.end) && route.end >= start ? route.end : periods.at(-1);
+  const filters = {
+    province: data?.meta.provinces.some((p) => p.code === route.province) ? route.province : '', start, end,
+    period: periods.includes(route.period) && route.period >= start && route.period <= end ? route.period : end,
+    metric: route.metric === 'rate' ? 'rate' : 'count', layer: LAYERS[route.layer] ? route.layer : 'tb',
+    overlays: [...new Set((route.overlays || '').split(',').filter((code) => code !== route.province && data?.meta.provinces.some((p) => p.code === code)))].slice(0, 3).join(','),
+    from: route.from,
+  };
+  function update(changes, options) {
+    const next = { ...filters, ...changes };
+    if (next.start > next.end) {
+      if (changes.start) next.end = next.start;
+      else next.start = next.end;
+    }
+    if (next.period < next.start || next.period > next.end) next.period = next.end;
+    setRoute({ ...next, page: route.page }, options);
+  }
+  function navigate(page, changes = {}) {
+    setRoute({ ...filters, ...changes, from: page === 'province' ? (route.page === 'trend' ? 'trend' : 'map') : filters.from, page });
+  }
+  const exportData = (rows, filename, kind) => downloadRows(rows, 'tb-insight-' + filename, {
+    dataset_version: data.meta.dataset_version, prepared_at: data.meta.prepared_at, filters,
+    export_scope: { rows: rows.length, provinces: [...new Set(rows.map((r) => r.province_code).filter(Boolean))], periods: [...new Set(rows.map((r) => r.period).filter(Boolean))] },
+    definition: 'Pasien mulai pengobatan TBC sensitif obat; bukan insidensi.',
+    units: { count: 'pasien', rate: 'pasien per 100000 penduduk', pending: '%' },
+    sources: data.meta.sources, input_files: data.meta.input_files,
+    spatial_reconciliation: data.meta.spatial_reconciliation,
+    note: 'Nilai tidak valid disembunyikan; outcome 2025 provisional. Lihat periode rujukan sosial. Tabel perbandingan dan peta mencakup seluruh provinsi, dengan wilayah aktif ditandai.',
+  }, kind);
+  const pageProps = { data, filters, update, navigate, exportData };
+  const Page = { overview: Overview, trend: Trends, map: Maps, province: Province, methods: Methods, sources: Sources }[route.page];
 
-export default App;
+  return <div className="app-shell">
+    <a className="skip-link" href="#main-content" onClick={(event) => { event.preventDefault(); const main = document.getElementById('main-content'); main.focus(); main.scrollIntoView(); }}>Lewati ke konten</a>
+    <header className="topbar">
+      <a className="brand" href="#/overview" onClick={(e) => { e.preventDefault(); navigate('overview'); }}><span className="brand-mark"><Activity size={25}/></span><span>TB<span className="brand-light">INSIGHT</span><small>INDONESIA · DATA EXPLORER</small></span></a>
+      <nav aria-label="Navigasi utama">{NAV.map(([id, label, Icon]) => <a key={id} href={`#/${id}${window.location.hash.includes('?') ? '?' + window.location.hash.split('?')[1] : ''}`} onClick={(e) => { e.preventDefault(); navigate(id); }} className={route.page === id ? 'active' : ''} aria-current={route.page === id ? 'page' : undefined}><Icon size={17}/>{label}</a>)}</nav>
+      <span className="alpha-tag"><i/>Frontend alpha</span>
+    </header>
+    <div className="workspace-bar"><div><span className="live-dot"/><strong>Data sumber resmi</strong><span className="workspace-separator"/><span>{snapshot.mode === 'api' ? 'Snapshot melalui API' : snapshot.mode === 'snapshot' ? 'Snapshot lokal' : snapshot.mode === 'loading' ? 'Memuat snapshot…' : 'Data belum tersedia'}</span>{data && <span className="data-stamp">Disiapkan {new Date(data.meta.prepared_at).toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' })}</span>}</div><button className="text-button" onClick={snapshot.retry} disabled={snapshot.mode === 'loading'}><RefreshCw size={15}/>Muat ulang</button></div>
+    <main id="main-content" tabIndex="-1">
+      {data && <>
+        <Filters data={data} filters={filters} page={route.page} open={filtersOpen} setOpen={setFiltersOpen} update={update} reset={() => setRoute({ page: route.page })}/>
+        {snapshot.mode === 'snapshot' && <Note>Menampilkan snapshot lokal yang disiapkan {new Date(data.meta.prepared_at).toLocaleString('id-ID')}. Endpoint dashboard belum aktif; data ini tersimpan dari sumber resmi, bukan pembaruan langsung.</Note>}
+        <div key={route.page} className="page-content">
+          <div className="page-breadcrumb"><span>Eksplorasi TB Indonesia</span><span aria-hidden="true">/</span><strong>{NAV.find(([id]) => id === route.page)?.[1]}</strong><span className="breadcrumb-period">{monthLabel(filters.period)}</span></div>
+          {['methods', 'sources'].includes(route.page) && <p className="muted">Filter disimpan untuk eksplorasi. Dokumentasi dan sumber di halaman ini mencakup seluruh snapshot.</p>}
+          <Page {...pageProps}/>
+        </div>
+      </>}
+      {!data && snapshot.mode === 'loading' && <div className="loading-page" role="status"><span className="loader"/><h1>Menyiapkan ruang eksplorasi</h1><p>Memuat kohort, konteks wilayah, dan hasil spasial…</p><div className="skeleton-grid" aria-hidden="true"><i/><i/><i/></div></div>}
+      {!data && snapshot.mode === 'error' && <><Empty retry={snapshot.retry}>{snapshot.error}</Empty><ProvinceMap data={null} filters={{}} neutral height={400}/></>}
+    </main>
+    <footer><div><strong>TBINSIGHT</strong><span>Eksplorasi pengobatan TB Indonesia</span></div><p>Data kohort pengobatan · bukan estimasi insidensi · hasil eksploratif</p><span>Frontend alpha</span></footer>
+  </div>;
+}

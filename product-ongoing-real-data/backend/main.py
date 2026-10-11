@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import os
+import json
 from pathlib import Path
 
 import pandas as pd
@@ -147,6 +148,15 @@ def get_metadata():
             "Tidak ada prediksi, skor risiko, optimasi SDM, kapasitas faskes, atau nilai sintetis di API ini.",
         ],
     }
+
+
+@app.get("/api/dashboard")
+def get_dashboard_snapshot():
+    """Same alpha response used by the frontend's explicit local snapshot mode."""
+    path = ROOT / "frontend" / "public" / "data" / "dashboard-snapshot.json"
+    if not path.exists():
+        raise HTTPException(status_code=503, detail="Dashboard snapshot has not been prepared")
+    return json.loads(path.read_text(encoding="utf-8"))
 
 
 if STATIC_DIR.exists():

@@ -5,6 +5,9 @@ import react from '@vitejs/plugin-react'
 export default defineConfig({
   plugins: [react()],
   server: {
+    watch: {
+      awaitWriteFinish: { stabilityThreshold: 300, pollInterval: 50 },
+    },
     proxy: {
       '/api': 'http://localhost:8000',
     },
