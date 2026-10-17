@@ -1,0 +1,82 @@
+{
+  "policy": "Reference link checks are not historical dataset download dates.",
+  "checks": [
+    {
+      "source_id": "SITB_TREATMENT_OUTCOMES_PROVINCE_MONTH",
+      "url": "https://tbdashboard.sitb.id/ss_data_tbc03so_2024_provinsi_bulanan_list.php",
+      "checked_at": "2026-10-15T08:52:13.413133+00:00",
+      "check_kind": "reference_link_only",
+      "http_status": 200,
+      "reachable": true,
+      "final_url": "https://tbdashboard.sitb.id/ss_data_tbc03so_2024_provinsi_bulanan_list.php",
+      "response_sample_sha256": "b785429535886d2a092a5604e336119fba46e0c8de8ca7f555c27467970d792e"
+    },
+    {
+      "source_id": "SITB_TREATMENT_OUTCOMES_PROVINCE_MONTH",
+      "url": "https://tbdashboard.sitb.id/ss_data_tbc03so_2025_provinsi_bulanan_list.php",
+      "checked_at": "2026-10-15T08:52:13.415138+00:00",
+      "check_kind": "reference_link_only",
+      "http_status": 200,
+      "reachable": true,
+      "final_url": "https://tbdashboard.sitb.id/ss_data_tbc03so_2025_provinsi_bulanan_list.php",
+      "response_sample_sha256": "b23d692725b4274de4a3c9afdfca8a4d6de0c4b2fca685ecbb495115c05f1bd8"
+    },
+    {
+      "source_id": "BPS_PROVINCE_ANNUAL_COVARIATES",
+      "url": "https://www.bps.go.id/",
+      "checked_at": "2026-10-15T08:52:13.416137+00:00",
+      "check_kind": "reference_link_only",
+      "http_status": 403,
+      "reachable": false,
+      "error": "HTTP_ERROR"
+    },
+    {
+      "source_id": "NASA_POWER_MERRA2_MONTHLY",
+      "url": "https://power.larc.nasa.gov/docs/services/api/temporal/monthly/",
+      "checked_at": "2026-10-15T08:52:13.417136+00:00",
+      "check_kind": "reference_link_only",
+      "http_status": 200,
+      "reachable": true,
+      "final_url": "https://power.larc.nasa.gov/docs/services/api/temporal/monthly/",
+      "response_sample_sha256": "bcf50734f92edfa90b53671160c1628decb58b75b0937080204601bb664bc02f"
+    },
+    {
+      "source_id": "BIG_PROVINCE_BOUNDARIES",
+      "url": "https://geoservices.big.go.id/rbi/rest/services/BATASWILAYAH/BATAS_WILAYAH/MapServer/12",
+      "checked_at": "2026-10-15T08:52:13.417136+00:00",
+      "check_kind": "reference_link_only",
+      "http_status": 200,
+      "reachable": true,
+      "final_url": "https://geoservices.big.go.id/rbi/rest/services/BATASWILAYAH/BATAS_WILAYAH/MapServer/12",
+      "response_sample_sha256": "d3336526ba1f7c6d2cd3138f20bd8e96b5ded5cd96f1dbb2e5554a8c4884053e"
+    },
+    {
+      "source_id": "BNPB_OPERATIONAL_EVENTS",
+      "url": "https://gis.bnpb.go.id/databencana/tabel/pencarian.php",
+      "checked_at": "2026-10-15T08:52:13.418137+00:00",
+      "check_kind": "reference_link_only",
+      "http_status": 200,
+      "reachable": true,
+      "final_url": "https://gis.bnpb.go.id/databencana/tabel/pencarian.php",
+      "response_sample_sha256": "cb8fc36ad10a521ddb2847e8322d28eb930ef8c1541f48bfa3064c64d25f1143"
+    },
+    {
+      "source_id": "BNPB_ANNUAL_BENCHMARKS",
+      "url": "https://data.bnpb.go.id/dataset/data-bencana-indonesia",
+      "checked_at": "2026-10-15T08:52:13.918859+00:00",
+      "check_kind": "reference_link_only",
+      "http_status": 403,
+      "reachable": false,
+      "error": "HTTP_ERROR"
+    },
+    {
+      "source_id": "BNPB_ANNUAL_BENCHMARKS",
+      "url": "https://data.bnpb.go.id/dataset/kompilasi-data-kejadian-dan-dampak-bencana-2025",
+      "checked_at": "2026-10-15T08:52:14.107025+00:00",
+      "check_kind": "reference_link_only",
+      "http_status": 403,
+      "reachable": false,
+      "error": "HTTP_ERROR"
+    }
+  ]
+}

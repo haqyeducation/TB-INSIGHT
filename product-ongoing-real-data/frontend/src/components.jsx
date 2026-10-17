@@ -1,9 +1,11 @@
-import { useEffect, useId, useRef, useState } from 'react';
+import { useContext, useEffect, useId, useRef, useState } from 'react';
 import { Area, CartesianGrid, ComposedChart, Legend, Line, ReferenceArea, ReferenceLine, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts';
 import { AlertCircle, ArrowUpRight, Download, Info, Maximize2, Minimize2, RefreshCw } from 'lucide-react';
 import { format, monthLabel, titleCase, seriesFor } from './data';
 import { COLORS, SERIES_COLORS } from './theme';
 import { useReducedMotion } from './hooks';
+import { DashboardContext } from './dashboard-context';
+import { contextFor, sourceDate } from './provenance';
 
 export function Panel({ title, eyebrow, note, action, children, className = '', expandable = false }) {
   const [expanded, setExpanded] = useState(false);
@@ -37,8 +39,24 @@ export function Note({ children, warning = false }) {
 export function Missing({ title, requirement, type = 'line', selection = false }) {
   return <div className="missing-visual" role="status"><div className={`empty-plot ${type}`} aria-hidden="true"><div/><div/><div/><div/></div><div className="missing-copy"><span className="missing-icon"><AlertCircle size={24}/></span><strong>{title}</strong><p>{selection ? requirement : `Masih memerlukan data ${requirement}.`}</p><span>{selection ? 'Gunakan filter Wilayah di bagian atas.' : 'Ruang visual tersedia · nilai belum ditampilkan'}</span></div></div>;
 }
-export function SourceNote({ children = 'SITB kohort pengobatan · BPS untuk denominator populasi.', onMethods }) {
-  return <div className="source-note"><span><Info size={13}/>{children}</span>{onMethods && <button className="text-button" onClick={onMethods}>Sumber & metode <ArrowUpRight size={13}/></button>}</div>;
+export function SourceNote({ children, onMethods, indicator }) {
+  const dashboard = useContext(DashboardContext);
+  const context = indicator && dashboard ? contextFor(dashboard.data, dashboard.filters, indicator) : null;
+  if (!context) return <div className="source-note"><span><Info size={13}/>{children || 'SITB kohort pengobatan · BPS untuk denominator populasi.'}</span>{onMethods && <button className="text-button" onClick={onMethods}>Sumber & metode <ArrowUpRight size={13}/></button>}</div>;
+  return <div className="visual-provenance">
+    <div className="source-note"><span><Info size={14}/>{context.sources.map((s) => s.publisher).join(' · ') || 'Masih memerlukan metadata sumber'}</span><span>{context.unit || 'Satuan belum tersedia'}</span></div>
+    <p className="context-scope">{indicator === 'tb' || ['poverty', 'sanitation', 'density', 'rain', 'temperature', 'lisa', 'persistence'].includes(indicator) ? 'Seluruh provinsi pada peta' : context.scope} · {context.period}</p>
+    {context.references.length > 0 && <p className="context-scope">Rujukan sumber: {context.references.join(' · ')}</p>}
+    {children && <p className="context-copy">{children}</p>}
+    {context.provisional && <p className="context-caution">Kohort 2025 provisional; outcome dapat berubah. Status ini berbeda dari kematangan outcome.</p>}
+    <details className="context-details"><summary>Definisi, sumber, dan batas interpretasi</summary>
+      {!context.definitions.length && <p>Masih memerlukan metadata definisi indikator untuk visual ini.</p>}
+      {context.definitions.map((d) => <div key={d.id}><strong>{d.label}</strong><p>{d.definition}</p><p className="context-caution">{d.limitation}</p></div>)}
+      <dl>{context.sources.map((source) => <div key={source.dataset_id}><dt>{source.publisher}</dt><dd>Akses dataset historis: {sourceDate(source.accessed_at)}. {source.recorded_snapshot_at?.length ? `Waktu tercatat pada olahan: ${source.recorded_snapshot_at.map(sourceDate).join('; ')}.` : ''}</dd></div>)}</dl>
+      <p className="context-scope">Versi data: {dashboard.data.meta.dataset_version}. Disiapkan: {sourceDate(dashboard.data.meta.prepared_at)}. Waktu persiapan bukan tanggal akses sumber.</p>
+      <div className="button-group"><button className="button secondary" onClick={() => dashboard.navigate('sources', { source: context.sourceIds.join(',') })}>Lihat sumber visual ini</button><button className="button secondary" onClick={() => dashboard.navigate('methods')}>Baca metode lengkap</button></div>
+    </details>
+  </div>;
 }
 export function Stat({ label, value, unit, note, accent = false }) {
   return <article className={`stat ${accent ? 'accent' : ''}`}><span className="stat-label">{label}</span><div className="stat-number">{value}<small>{unit}</small></div><p>{note}</p></article>;

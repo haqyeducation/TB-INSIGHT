@@ -13,6 +13,10 @@ from pathlib import Path
 from zipfile import ZipFile
 from shapely import force_2d, make_valid, union_all
 from shapely.geometry import mapping, shape
+try:
+    from .dashboard_provenance import enrich_metadata
+except ImportError:
+    from dashboard_provenance import enrich_metadata
 
 ROOT = Path(__file__).resolve().parents[1]
 PUBLIC = ROOT / "frontend" / "public"
@@ -167,6 +171,9 @@ def prepare(reference_dir, climate_zip):
                         "qa_scope": "Pemeriksaan tampilan: kunci unik, persentase 0–100%, dan pencocokan kode wilayah. Bukan sign-off QA penelitian.",
                         "boundary": {"province_count": len(names), "parts": len(boundary["features"]), "source_parts": source_parts,
                                      "source": "BIG", "representation": "geographic", "display_processing": "Valid polygon components unioned by canonical province identity; collapsed non-area components omitted. Source geometry unchanged."}}}
+    payload["meta"].update(enrich_metadata(ROOT, payload["meta"]["sources"], rows, artifact_meta))
+    payload["meta"]["spatial_periods"] = sorted({r["period"] for r in spatial.get("hotspot_monthly_lisa_R", [])})
+    payload["meta"]["spatial_methods"] = spatial.get("hotspot_persistence_validation_R", {})
     (PUBLIC / "data").mkdir(parents=True, exist_ok=True)
     (PUBLIC / "data" / "dashboard-snapshot.json").write_text(json.dumps(payload, ensure_ascii=False, allow_nan=False, separators=(",", ":")), encoding="utf-8")
     print(json.dumps({"rows": len(rows), "provinces": len(provinces), "periods": len(periods), "invalid_fields": len(issues), "artifacts": len(artifact_meta)}))

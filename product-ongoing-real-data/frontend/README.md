@@ -57,6 +57,8 @@ Judul sans besar, aksen serif miring, ruang lega, dan kontrol membulat mengikuti
 
 ### Pemeriksaan
 
+S3-ERI-02 menambahkan metadata sumber, satuan, pemakaian, tanggal yang tercatat, checksum, kamus indikator, serta catatan yang dapat dibuka dekat visual utama. Tanggal akses historis yang tidak memiliki bukti tetap `null` dan ditampilkan sebagai **Belum tercatat**. Waktu pada olahan SITB dan pemeriksaan tautan memiliki label terpisah. Lihat `docs/design/s3-eri-02-implementation.md` untuk acuan, audit tanggal, dan langkah pembaruan metadata tanpa mengubah nilai kohort.
+
 ```powershell
 node --test tests/*.test.js
 npm run lint

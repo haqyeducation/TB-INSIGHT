@@ -7,6 +7,7 @@ export default function MapTimeline({ data, filters, update }) {
   const periods = data.meta.periods.filter((p) => p >= filters.start && p <= filters.end);
   const index = periods.indexOf(filters.period);
   const persistence = filters.layer === 'persistence';
+  const spatialPeriods = data.meta.spatial_periods || [];
 
   useEffect(() => {
     if (!playing || persistence || periods.length < 2) return;
@@ -15,7 +16,7 @@ export default function MapTimeline({ data, filters, update }) {
     return () => clearTimeout(timer);
   }, [playing, persistence, filters.period, filters.start, filters.end, index, periods, update]);
 
-  if (persistence) return <div className="static-period"><strong>Jan 2024 – Des 2025</strong><span>Hasil persistence merangkum 24 bulan lampiran. Tidak berubah dengan bulan fokus.</span></div>;
+  if (persistence) return <div className="static-period"><strong>{monthLabel(spatialPeriods[0])} – {monthLabel(spatialPeriods.at(-1))}</strong><span>Hasil persistence merangkum {spatialPeriods.length ? `${spatialPeriods.length} bulan lampiran` : 'periode lampiran yang belum tercatat'}. Tidak berubah dengan bulan fokus.</span></div>;
   return <div className="map-timeline" aria-label="Navigasi bulan peta">
     <div className="timeline-controls">
       <button className="icon-button" aria-label="Bulan sebelumnya" disabled={index <= 0} onClick={() => { setPlaying(false); update({ period: periods[index - 1] }); }}><ChevronLeft size={19}/></button>

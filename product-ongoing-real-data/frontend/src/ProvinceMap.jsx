@@ -5,7 +5,7 @@ import { GeoJSON, MapContainer, useMap } from 'react-leaflet';
 import 'leaflet/dist/leaflet.css';
 import { LocateFixed, MapPin, MousePointer2 } from 'lucide-react';
 import { format, titleCase, monthLabel, LAYERS, mapRecords, scaleFor } from './data';
-import { DataStates, Empty } from './components';
+import { DataStates, Empty, SourceNote } from './components';
 import { COLORS } from './theme';
 
 let geometryRequest;
@@ -159,6 +159,6 @@ export default function ProvinceMap({ data, filters, layerId = 'tb', onSelect, h
       {missing > 0 && <span><i className="state-missing"/>Belum tersedia ({missing})</span>}{invalid > 0 && <span><i className="state-invalid"/>Belum valid ({invalid})</span>}
     </div>}
     <p className="map-caption">{neutral ? 'Peta batas provinsi. Pilih wilayah untuk menjelajahi data.' : scale?.categorical ? 'Kategori mengikuti lampiran Dame. Not significant tidak berarti tidak ada pasien TB.' : 'Lima interval sama lebar, tetap sepanjang dataset. Warna menunjukkan nilai indikator; bukan kategori risiko.'}</p>
-    {!neutral && <DataStates/>}
+    {!neutral && <><DataStates/><SourceNote indicator={layerId}/></>}
   </div>;
 }

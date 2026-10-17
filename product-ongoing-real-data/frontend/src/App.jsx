@@ -6,6 +6,7 @@ import ProvinceMap from './ProvinceMap';
 import Filters from './Filters';
 import { useSnapshot } from './hooks';
 import { downloadRows, monthLabel, LAYERS } from './data';
+import { DashboardContext } from './dashboard-context';
 
 const NAV = [
   ['overview', 'Ringkasan', LayoutDashboard], ['trend', 'Tren', LineChart],
@@ -49,7 +50,7 @@ export default function App() {
     period: periods.includes(route.period) && route.period >= start && route.period <= end ? route.period : end,
     metric: route.metric === 'rate' ? 'rate' : 'count', layer: LAYERS[route.layer] ? route.layer : 'tb',
     overlays: [...new Set((route.overlays || '').split(',').filter((code) => code !== route.province && data?.meta.provinces.some((p) => p.code === code)))].slice(0, 3).join(','),
-    from: route.from,
+    from: route.from, source: (route.source || '').split(',').filter((id) => data?.meta.sources.some((s) => s.dataset_id === id)).join(','),
   };
   function update(changes, options) {
     const next = { ...filters, ...changes };
@@ -69,10 +70,12 @@ export default function App() {
     definition: 'Pasien mulai pengobatan TBC sensitif obat; bukan insidensi.',
     units: { count: 'pasien', rate: 'pasien per 100000 penduduk', pending: '%' },
     sources: data.meta.sources, input_files: data.meta.input_files,
+    methods: data.meta.methods, field_definitions: data.meta.field_definitions, provenance_version: data.meta.provenance_version,
     spatial_reconciliation: data.meta.spatial_reconciliation,
     note: 'Nilai tidak valid disembunyikan; outcome 2025 provisional. Lihat periode rujukan sosial. Tabel perbandingan dan peta mencakup seluruh provinsi, dengan wilayah aktif ditandai.',
   }, kind);
-  const pageProps = { data, filters, update, navigate, exportData };
+  const filterBar = data ? <Filters data={data} filters={filters} page={route.page} open={filtersOpen} setOpen={setFiltersOpen} update={update} reset={() => setRoute({ page: route.page })}/> : null;
+  const pageProps = { data, filters, update, navigate, exportData, filterBar };
   const Page = { overview: Overview, trend: Trends, map: Maps, province: Province, methods: Methods, sources: Sources }[route.page];
 
   return <div className="app-shell">
@@ -85,12 +88,12 @@ export default function App() {
     <div className="workspace-bar"><div><span className="live-dot"/><strong>Data sumber resmi</strong><span className="workspace-separator"/><span>{snapshot.mode === 'api' ? 'Snapshot melalui API' : snapshot.mode === 'snapshot' ? 'Snapshot lokal' : snapshot.mode === 'loading' ? 'Memuat snapshot…' : 'Data belum tersedia'}</span>{data && <span className="data-stamp">Disiapkan {new Date(data.meta.prepared_at).toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' })}</span>}</div><button className="text-button" onClick={snapshot.retry} disabled={snapshot.mode === 'loading'}><RefreshCw size={15}/>Muat ulang</button></div>
     <main id="main-content" tabIndex="-1">
       {data && <>
-        <Filters data={data} filters={filters} page={route.page} open={filtersOpen} setOpen={setFiltersOpen} update={update} reset={() => setRoute({ page: route.page })}/>
+        {!['overview', 'trend', 'map'].includes(route.page) && filterBar}
         {snapshot.mode === 'snapshot' && <Note>Menampilkan snapshot lokal yang disiapkan {new Date(data.meta.prepared_at).toLocaleString('id-ID')}. Endpoint dashboard belum aktif; data ini tersimpan dari sumber resmi, bukan pembaruan langsung.</Note>}
         <div key={route.page} className="page-content">
           <div className="page-breadcrumb"><span>Eksplorasi TB Indonesia</span><span aria-hidden="true">/</span><strong>{NAV.find(([id]) => id === route.page)?.[1]}</strong><span className="breadcrumb-period">{monthLabel(filters.period)}</span></div>
           {['methods', 'sources'].includes(route.page) && <p className="muted">Filter disimpan untuk eksplorasi. Dokumentasi dan sumber di halaman ini mencakup seluruh snapshot.</p>}
-          <Page {...pageProps}/>
+          <DashboardContext.Provider value={{ data, filters, navigate }}><Page {...pageProps}/></DashboardContext.Provider>
         </div>
       </>}
       {!data && snapshot.mode === 'loading' && <div className="loading-page" role="status"><span className="loader"/><h1>Menyiapkan ruang eksplorasi</h1><p>Memuat kohort, konteks wilayah, dan hasil spasial…</p><div className="skeleton-grid" aria-hidden="true"><i/><i/><i/></div></div>}

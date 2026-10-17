@@ -52,7 +52,7 @@ export default function Filters({ data, filters, page, open, setOpen, update, re
     <div className="filter-context" aria-label="Konteks analisis">
       {filters.province ? <button className="context-chip" onClick={() => update({ province: '' })} aria-label="Hapus filter provinsi">{scope}<X size={13}/></button> : <span className="context-chip">{scope}</span>}
       <span>{monthLabel(filters.start)} – {monthLabel(filters.end)}</span>
-      <span>{persistence ? 'Persistence · 24 bulan lampiran' : `Fokus ${monthLabel(filters.period)}`}</span>
+      <span>{persistence ? `Persistence · ${data.meta.spatial_periods?.length ? `${data.meta.spatial_periods.length} bulan lampiran` : 'periode belum tercatat'}` : `Fokus ${monthLabel(filters.period)}`}</span>
       {filters.period?.startsWith('2025') && !persistence && <span className="provisional-pill">Kohort provisional</span>}
     </div>
   </section>;
