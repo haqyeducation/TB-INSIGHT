@@ -1,0 +1,9 @@
+layer,n_provinces,standardized_iqr,global_moran_i,absolute_global_moran_i,selection_note
+log_density,38,1.1351082884710226,0.7418899358003087,0.7418899358003087,"Comparable z-scale; rank is descriptive, not a causal model-selection rule"
+poverty,38,1.1002301926204028,0.7276343804537323,0.7276343804537323,"Comparable z-scale; rank is descriptive, not a causal model-selection rule"
+sanitation,38,0.6486116220592417,0.5525305579279665,0.5525305579279665,"Comparable z-scale; rank is descriptive, not a causal model-selection rule"
+temperature_anomaly,38,1.3068152867482086,0.5047057268138414,0.5047057268138414,"Comparable z-scale; rank is descriptive, not a causal model-selection rule"
+humidity_anomaly,38,1.549766764989755,0.45969605136858255,0.45969605136858255,"Comparable z-scale; rank is descriptive, not a causal model-selection rule"
+precipitation_anomaly,38,1.4427318633728876,0.3030167534913662,0.3030167534913662,"Comparable z-scale; rank is descriptive, not a causal model-selection rule"
+disasters,38,0.7903555859580311,0.2061280763964721,0.2061280763964721,"Comparable z-scale; rank is descriptive, not a causal model-selection rule"
+treatment_rate,38,0.811384241423511,0.13590766815469343,0.13590766815469343,"Comparable z-scale; rank is descriptive, not a causal model-selection rule"

@@ -1,0 +1,12 @@
+{
+  "monthly_rows": 912,
+  "province_count": 38,
+  "period_count": 24,
+  "permutations": 999,
+  "seed": 20261017,
+  "weights": "queen contiguity plus explicit shortest-component bridges",
+  "raw_significant": 87,
+  "fdr_significant": 1,
+  "maps_rendered": 3,
+  "method_note": "Permutation p-values use complete-label randomisation; FDR is applied separately within each month."
+}

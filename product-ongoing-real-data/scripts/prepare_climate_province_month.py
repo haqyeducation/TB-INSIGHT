@@ -215,6 +215,7 @@ def main() -> None:
         grouped = with_normals.groupby("province_code")[variable]
         with_normals[f"{variable}_lag1"] = grouped.shift(1)
         with_normals[f"{variable}_lag2"] = grouped.shift(2)
+        with_normals[f"{variable}_lag3"] = grouped.shift(3)
         with_normals[f"{variable}_mean_lag0_2"] = grouped.transform(lambda s: s.rolling(3, min_periods=3).mean())
     observed = with_normals.query("year in [2024, 2025]").copy()
     observed["heavy_rain_anomaly"] = (observed["precipitation_mm_z"] >= 1.0).astype(int)

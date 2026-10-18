@@ -54,6 +54,34 @@ def extract_after_name(text: str, aliases: list[str], count: int) -> list[str]:
     raise ValueError(f"Only found {len(values)} values after {aliases}")
 
 
+def extract_table_row_numbers(text: str, aliases: list[str]) -> list[str]:
+    """Return numeric cells belonging only to one province row.
+
+    BPS PDF text extraction omits visual placeholders such as ``...`` and an
+    en dash.  Counting a fixed number of numeric tokens can therefore spill
+    into the next province row.  Stop explicitly at the next province label
+    instead.
+    """
+    lines = [line.strip() for line in text.splitlines() if line.strip()]
+    province_labels = {
+        alias
+        for _, province in PROVINCES
+        for alias in ALIASES.get(province, [province])
+    }
+    index = next(i for i, line in enumerate(lines) if line in aliases)
+    values: list[str] = []
+    for line in lines[index + 1:]:
+        if line in province_labels or line.upper() == "INDONESIA":
+            break
+        if re.fullmatch(r"-?\d[\d.]*,?\d*", line) and line not in {
+            "2020", "2023", "2024", "2025", "2026"
+        }:
+            values.append(line)
+    if not values:
+        raise ValueError(f"No numeric values found in row {aliases}")
+    return values
+
+
 def extract_population() -> pd.DataFrame:
     specs = [
         (RAW / "Statistik_Indonesia_2024.pdf", 165, 166, {2023: 1}),
@@ -114,9 +142,12 @@ def extract_poverty() -> pd.DataFrame:
     text_2024 = pymupdf.open(pdf_2024)[358].get_text()
     for code, province in PROVINCES:
         aliases = ALIASES.get(province, [province])
-        values = extract_after_name(text_2024, aliases, 6)
+        values = extract_table_row_numbers(text_2024, aliases)
         rows.append({
-            "province_code": code, "year": 2024, "poverty_pct": number_id(values[4]),
+            # The last two numeric cells are March and September percentages.
+            # New Papua provinces have no 2023 cells, but this relative
+            # position remains stable.
+            "province_code": code, "year": 2024, "poverty_pct": number_id(values[-2]),
             "poverty_reference_period": "Maret 2024 (Susenas)",
             "poverty_source_file": pdf_2024.name, "poverty_source_table": "Tabel 4.6.2",
         })
@@ -126,9 +157,11 @@ def extract_poverty() -> pd.DataFrame:
     text_2025 = doc_2025[27].get_text() + "\n" + doc_2025[28].get_text()
     for code, province in PROVINCES:
         aliases = ALIASES.get(province, [province])
-        values = extract_after_name(text_2025, aliases, 6)
+        values = extract_table_row_numbers(text_2025, aliases)
         rows.append({
-            "province_code": code, "year": 2025, "poverty_pct": number_id(values[5]),
+            # Total percentage is the final numeric cell.  This also handles
+            # provinces without an urban or rural component (shown as a dash).
+            "province_code": code, "year": 2025, "poverty_pct": number_id(values[-1]),
             "poverty_reference_period": "Maret 2025 (Susenas)",
             "poverty_source_file": pdf_2025.name, "poverty_source_table": "Tabel 2.5",
         })
@@ -141,8 +174,21 @@ def main() -> None:
     poverty = extract_poverty()
     annual = population.merge(sanitation, on=["province_code", "year"], how="left")
     annual = annual.merge(poverty, on=["province_code", "year"], how="left")
+    for column in ["sanitation_access_pct", "poverty_pct"]:
+        observed = annual[column].dropna()
+        if not observed.between(0, 100).all():
+            bad = annual.loc[~annual[column].between(0, 100) & annual[column].notna(), [
+                "province_code", "province", "year", column
+            ]]
+            raise ValueError(f"Out-of-range {column}:\n{bad.to_string(index=False)}")
+    poverty_scope = annual[annual.year.isin([2024, 2025])]
+    if poverty_scope.poverty_pct.isna().any():
+        raise ValueError("Poverty extraction is incomplete for 2024-2025")
     annual["source_publisher"] = "Badan Pusat Statistik"
-    annual["extraction_method"] = "Machine extraction from official PDF table; row-count and national-total QA"
+    annual["extraction_method"] = (
+        "Machine extraction from official BPS PDF table; province-row boundary, "
+        "range, completeness, and row-count QA"
+    )
     annual = annual.sort_values(["province_code", "year"])
     CURATED.mkdir(parents=True, exist_ok=True)
     annual.to_csv(CURATED / "bps_province_annual_official.csv", index=False)
@@ -151,8 +197,14 @@ def main() -> None:
         "rows": len(annual), "provinces": int(annual.province_code.nunique()),
         "years": sorted(annual.year.unique().tolist()),
         "population_totals": annual.groupby("year").population.sum().astype(int).to_dict(),
-        "missing_sanitation": int(annual.sanitation_access_pct.isna().sum()),
-        "missing_poverty": int(annual.poverty_pct.isna().sum()),
+        "missing_sanitation_all_years": int(annual.sanitation_access_pct.isna().sum()),
+        "missing_sanitation_2024_2025": int(poverty_scope.sanitation_access_pct.isna().sum()),
+        "missing_poverty_all_years": int(annual.poverty_pct.isna().sum()),
+        "missing_poverty_2024_2025": int(poverty_scope.poverty_pct.isna().sum()),
+        "poverty_range_2024_2025": {
+            "min": float(poverty_scope.poverty_pct.min()),
+            "max": float(poverty_scope.poverty_pct.max()),
+        },
         "notes": [
             "Population is the official mid-year projection and may be joined to all months as a denominator, not treated as a monthly observation.",
             "Poverty and sanitation retain their survey/reference period and are not interpolated.",

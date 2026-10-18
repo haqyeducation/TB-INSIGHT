@@ -62,6 +62,7 @@ Pilih jalur kerja sebelum menjalankan aplikasi atau pipeline:
 - Penelitian dan pengolahan data: baca [`product-ongoing-real-data/README.md`](product-ongoing-real-data/README.md).
 - Demo produk: baca [`product-demo-synthetic/README.md`](product-demo-synthetic/README.md).
 - Sprint enam minggu: lihat dokumen dan workbook pada [`product-ongoing-real-data/deliverables/`](product-ongoing-real-data/deliverables/).
+- Handoff M3 ke S4: gunakan [`outputs/2026-10-18-m3-to-s4-github/TB_INSIGHT_M3_to_S4_Direction.xlsx`](outputs/2026-10-18-m3-to-s4-github/TB_INSIGHT_M3_to_S4_Direction.xlsx). Seluruh input pada workbook menunjuk ke path kanonis dalam repository ini.
 
 Untuk memvalidasi panel penelitian yang sudah tersedia:
 

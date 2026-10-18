@@ -13,8 +13,14 @@
     "2025": 284438600,
     "2026": 287198400
   },
-  "missing_sanitation": 38,
-  "missing_poverty": 76,
+  "missing_sanitation_all_years": 38,
+  "missing_sanitation_2024_2025": 0,
+  "missing_poverty_all_years": 76,
+  "missing_poverty_2024_2025": 0,
+  "poverty_range_2024_2025": {
+    "min": 3.72,
+    "max": 32.97
+  },
   "notes": [
     "Population is the official mid-year projection and may be joined to all months as a denominator, not treated as a monthly observation.",
     "Poverty and sanitation retain their survey/reference period and are not interpolated."

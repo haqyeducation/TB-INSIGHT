@@ -1,0 +1,480 @@
+---
+title: "S3-DAM-01 — Hotspot Persistence Analysis"
+author: "Dame Gabriela Silitonga"
+date: "`r format(Sys.Date(), '%d %B %Y')`"
+output:
+  html_document:
+    toc: true
+    toc_depth: 3
+    number_sections: true
+---
+
+
+**Aturan (pre-specified):**
+
+1. Untuk tiap provinsi dan tiap bulan, jalankan LISA (Queen+bridge v2,
+   variabel `treatment_started_per_100k_population`, `alpha = 0.05`,
+   FDR Benjamini-Hochberg dihitung **per bulan** lintas 38 provinsi --
+   konsisten dengan cara S2-DAM-02 mengoreksi multiple testing untuk satu
+   cross-section).
+2. Satu provinsi-bulan dianggap **signifikan** kalau `p_fdr < 0.05` --
+   BUKAN p mentah, supaya konsisten dengan standar yang sudah dipakai
+   S2-DAM-02.
+3. Hitung `n_HH` = jumlah bulan (dari 24) provinsi itu signifikan **dan**
+   High-High; `n_LL` = jumlah bulan signifikan **dan** Low-Low.
+4. Klasifikasi akhir per provinsi (5 kategori, saling eksklusif):
+
+   | Kategori | Syarat |
+   |---|---|
+   | **Persistent Hotspot** | `n_HH >= 12` (signifikan HH di >=50% dari 24 bulan) |
+   | **Persistent Coldspot** | `n_LL >= 12` |
+   | **Sporadic Hotspot** | `0 < n_HH < 12` dan `n_LL == 0` |
+   | **Sporadic Coldspot** | `0 < n_LL < 12` dan `n_HH == 0` |
+   | **Mixed/Unstable** | `n_HH > 0` **dan** `n_LL > 0` (pernah HH, pernah LL -- klasifikasi tidak stabil) |
+   | **Not significant** | `n_HH == 0` dan `n_LL == 0` (tidak pernah signifikan HH/LL di bulan manapun) |
+
+   Ambang 12/24 (50%) dipilih karena merupakan titik tengah yang paling
+   netral (tidak condong ke syarat longgar atau ketat) -- bukan dipilih
+   setelah melihat distribusi hasil.
+
+# 3. Packages
+
+```{r setup, message=FALSE, warning=FALSE}
+required_packages <- c(
+  "sf", "spdep", "dplyr", "readr", "jsonlite", "tibble", "knitr", "ggplot2", "tidyr"
+)
+
+missing_packages <- required_packages[
+  !vapply(required_packages, requireNamespace, logical(1), quietly = TRUE)
+]
+
+if (length(missing_packages) > 0) {
+  stop(
+    "Install package(s) terlebih dahulu: ",
+    paste(missing_packages, collapse = ", "),
+    call. = FALSE
+  )
+}
+
+library(sf)
+library(spdep)
+library(dplyr)
+library(readr)
+library(jsonlite)
+library(tibble)
+library(knitr)
+library(ggplot2)
+library(tidyr)
+
+options(stringsAsFactors = FALSE)
+sf_use_s2(TRUE)
+```
+
+# 4. Root repository dan path
+
+```{r paths}
+find_repo_root <- function(start = getwd(), max_up = 6) {
+  current <- normalizePath(start, winslash = "/", mustWork = TRUE)
+  for (i in 0:max_up) {
+    candidate <- file.path(current, "data", "processed")
+    if (dir.exists(candidate)) return(current)
+    parent <- dirname(current)
+    if (identical(parent, current)) break
+    current <- parent
+  }
+  stop(
+    "Root repository TB-INSIGHT tidak ditemukan. Pastikan Rmd dijalankan dari dalam repository.",
+    call. = FALSE
+  )
+}
+
+ROOT <- find_repo_root()
+
+PANEL <- file.path(ROOT, "data", "processed", "analysis_panel_province_month_2024_2025.csv")
+BOUNDARY <- file.path(ROOT, "data", "processed", "province_boundaries_38.geojson")
+PRIMARY_EDGES_V2 <- file.path(ROOT, "data", "processed", "spatial_weights_v2_queen_bridge.csv")
+CURATED <- file.path(ROOT, "data", "processed")
+
+check_file <- function(path) {
+  if (!file.exists(path)) {
+    stop(
+      "File tidak ditemukan: ", path,
+      " -- jalankan dulu S2-DAM-01 supaya file ini dibuat.",
+      call. = FALSE
+    )
+  }
+}
+
+check_file(PANEL)
+check_file(BOUNDARY)
+check_file(PRIMARY_EDGES_V2)
+
+cat("Repository root:", ROOT, "\n")
+```
+
+# 5. Parameter reproducibility
+
+
+```{r parameters}
+SEED <- 20260902
+N_PERMUTATIONS <- 999
+ALPHA <- 0.05
+PERSISTENCE_THRESHOLD_MONTHS <- 12  # dari 24 bulan (50%) -- lihat bagian 2
+
+SEED; N_PERMUTATIONS; ALPHA; PERSISTENCE_THRESHOLD_MONTHS
+```
+
+# 6. Load boundary, weights primer, dan panel
+
+```{r load-data}
+boundary_sf <- st_read(BOUNDARY, quiet = TRUE)
+province_order <- boundary_sf$province
+
+primary_edges_v2 <- read_csv(PRIMARY_EDGES_V2, show_col_types = FALSE)
+
+build_primary_nb <- function(province_order, edges) {
+  neighbors <- setNames(vector("list", length(province_order)), province_order)
+  for (i in seq_len(nrow(edges))) {
+    a <- edges$province_a[i]; b <- edges$province_b[i]
+    if (is.na(a) || is.na(b)) next
+    neighbors[[a]] <- unique(c(neighbors[[a]], b))
+    neighbors[[b]] <- unique(c(neighbors[[b]], a))
+  }
+  nb <- structure(
+    lapply(neighbors, function(x) if (length(x) == 0) integer(0) else match(x, province_order)),
+    class = "nb", region.id = province_order, call = match.call()
+  )
+  attr(nb, "sym") <- TRUE
+  nb
+}
+
+nb_primary <- build_primary_nb(province_order, primary_edges_v2)
+w_primary <- nb2listw(nb_primary, style = "W", zero.policy = TRUE)
+
+n_island_primary <- sum(card(nb_primary) == 0)
+n_components_primary <- n.comp.nb(nb_primary)$nc
+cat("Provinsi tanpa tetangga (primer):", n_island_primary, "\n")
+cat("Connected components (primer):", n_components_primary, "\n")
+
+panel <- read_csv(
+  PANEL,
+  col_types = cols(province_code = col_character())
+)
+
+periods <- sort(unique(panel$period))
+cat("Jumlah bulan:", length(periods), "\n")
+```
+
+# 7. Fungsi LISA satu bulan 
+
+Kolom p-value dipilih eksplisit (bukan tebakan), `iseed` dipakai untuk
+reproducibility permutasi -- identik dengan pendekatan S2-DAM-02.
+
+```{r lisa-function}
+run_lisa_month <- function(y, listw, province_order, seed, permutations, alpha) {
+
+  set.seed(seed)
+
+  lisa_raw <- localmoran_perm(
+    y, listw,
+    nsim = permutations,
+    iseed = seed,
+    zero.policy = TRUE
+  )
+  lisa_df <- as.data.frame(lisa_raw)
+
+  P_COL_PRIORITY <- c("Pr(folded) Sim", "Pr(z != E(Ii)) Sim")
+  p_col_name <- P_COL_PRIORITY[P_COL_PRIORITY %in% colnames(lisa_df)][1]
+
+  if (is.na(p_col_name)) {
+    stop(
+      "Tidak ada kolom p-value permutasi yang dikenali. Kolom tersedia:\n",
+      paste(colnames(lisa_df), collapse = ", "),
+      call. = FALSE
+    )
+  }
+
+  p_sim <- lisa_df[[p_col_name]]
+  p_fdr <- p.adjust(p_sim, method = "fdr")
+
+  y_z <- as.numeric(scale(y))
+  y_lag_z <- as.numeric(scale(lag.listw(listw, y, zero.policy = TRUE)))
+
+  quadrant <- character(length(y))
+  quadrant[y_z >= 0 & y_lag_z >= 0] <- "High-High"
+  quadrant[y_z < 0  & y_lag_z < 0]  <- "Low-Low"
+  quadrant[y_z < 0  & y_lag_z >= 0] <- "Low-High"
+  quadrant[y_z >= 0 & y_lag_z < 0]  <- "High-Low"
+
+  label_fdr <- ifelse(p_fdr < alpha, quadrant, "Insignificant")
+
+  tibble(
+    province = province_order,
+    p_sim = p_sim,
+    p_fdr = p_fdr,
+    quadrant = quadrant,
+    label_fdr = label_fdr
+  )
+}
+```
+
+# 8. Menjalankan LISA untuk 24 bulan
+
+```{r run-monthly-lisa}
+monthly_lisa <- lapply(periods, function(p) {
+  y_month <- panel |>
+    filter(period == p) |>
+    arrange(match(province, province_order)) |>
+    pull(treatment_started_per_100k_population)
+
+  result <- run_lisa_month(
+    y = y_month,
+    listw = w_primary,
+    province_order = province_order,
+    seed = SEED,
+    permutations = N_PERMUTATIONS,
+    alpha = ALPHA
+  )
+  result$period <- p
+  result
+}) |> bind_rows()
+
+cat("Total baris (38 provinsi x 24 bulan):", nrow(monthly_lisa), "\n")
+
+knitr::kable(head(monthly_lisa, 10), digits = 4, caption = "Contoh hasil LISA bulanan")
+```
+
+# 9. Menerapkan definisi persistence (bagian 2) ke hasil
+
+```{r persistence-classification}
+persistence <- monthly_lisa |>
+  group_by(province) |>
+  summarise(
+    n_HH = sum(label_fdr == "High-High"),
+    n_LL = sum(label_fdr == "Low-Low"),
+    n_HL = sum(label_fdr == "High-Low"),
+    n_LH = sum(label_fdr == "Low-High"),
+    n_significant_months = sum(label_fdr != "Insignificant"),
+    .groups = "drop"
+  ) |>
+  mutate(
+    persistence_category = case_when(
+      n_HH >= PERSISTENCE_THRESHOLD_MONTHS ~ "Persistent Hotspot",
+      n_LL >= PERSISTENCE_THRESHOLD_MONTHS ~ "Persistent Coldspot",
+      n_HH > 0 & n_LL > 0                  ~ "Mixed/Unstable",
+      n_HH > 0                             ~ "Sporadic Hotspot",
+      n_LL > 0                             ~ "Sporadic Coldspot",
+      TRUE                                 ~ "Not significant"
+    )
+  ) |>
+  right_join(tibble(province = province_order), by = "province") |>
+  arrange(match(province, province_order))
+
+# Pastikan semua kategori punya level eksplisit walau tidak ada anggotanya --
+# supaya legend peta tetap menampilkan semua kategori (AC: jangan sembunyikan).
+PERSISTENCE_LEVELS <- c(
+  "Persistent Hotspot", "Persistent Coldspot",
+  "Sporadic Hotspot", "Sporadic Coldspot",
+  "Mixed/Unstable", "Not significant"
+)
+persistence$persistence_category <- factor(persistence$persistence_category, levels = PERSISTENCE_LEVELS)
+
+knitr::kable(
+  persistence |> count(persistence_category, .drop = FALSE),
+  caption = "Jumlah provinsi per kategori persistence (semua kategori ditampilkan, termasuk yang 0)"
+)
+
+# --- Diagnostik: pastikan hasil "semua abu-abu" (kalau terjadi) itu genuine,
+# bukan bug join/logic. Kalau baris NA muncul di sini, ada province name
+# yang tidak match -- itu baru bug. Kalau NA = 0 dan "Not significant"
+# tinggi, itu temuan asli (konsisten dengan S2-DAM-02: 0 signifikan FDR
+# bahkan di cross-section rata-rata 24 bulan yang paling kuat dayanya).
+cat("--- Diagnostik ---\n")
+cat("Distribusi kategori (useNA, harus 0 NA):\n")
+print(table(persistence$persistence_category, useNA = "ifany"))
+cat("\nTotal provinsi-bulan signifikan FDR di seluruh 912 baris:", sum(monthly_lisa$label_fdr != "Insignificant"), "\n")
+cat("Provinsi yang PERNAH signifikan FDR minimal 1 bulan (n_HH>0 atau n_LL>0):", sum(persistence$n_HH > 0 | persistence$n_LL > 0), "/", nrow(persistence), "\n")
+
+knitr::kable(persistence, caption = "Klasifikasi persistence per provinsi (38 baris, tidak ada yang disembunyikan)")
+```
+
+## 9a. Versi eksploratif -- persistence berbasis p mentah (tanpa FDR)
+
+Kalau peta FDR di bagian 10 didominasi abu-abu ("Not significant"), itu
+bukan berarti tidak ada pola sama sekali untuk dieksplorasi, cuma
+berarti tidak ada yang **cukup kuat secara statistik ketat** untuk lolos
+koreksi 38 uji simultan per bulan. Sebagai pembanding eksploratif (BUKAN
+pengganti hasil FDR di atas), versi yang sama dihitung ulang memakai
+ambang p mentah < alpha, tanpa koreksi, persis pola raw-vs-FDR yang
+sudah dipakai di S2-DAM-02. 
+
+```{r persistence-raw}
+persistence_raw <- monthly_lisa |>
+  mutate(label_raw = ifelse(p_sim < ALPHA, quadrant, "Insignificant")) |>
+  group_by(province) |>
+  summarise(
+    n_HH_raw = sum(label_raw == "High-High"),
+    n_LL_raw = sum(label_raw == "Low-Low"),
+    .groups = "drop"
+  ) |>
+  mutate(
+    persistence_category_raw = case_when(
+      n_HH_raw >= PERSISTENCE_THRESHOLD_MONTHS ~ "Persistent Hotspot",
+      n_LL_raw >= PERSISTENCE_THRESHOLD_MONTHS ~ "Persistent Coldspot",
+      n_HH_raw > 0 & n_LL_raw > 0              ~ "Mixed/Unstable",
+      n_HH_raw > 0                             ~ "Sporadic Hotspot",
+      n_LL_raw > 0                             ~ "Sporadic Coldspot",
+      TRUE                                     ~ "Not significant"
+    )
+  ) |>
+  right_join(tibble(province = province_order), by = "province") |>
+  arrange(match(province, province_order))
+
+persistence_raw$persistence_category_raw <- factor(persistence_raw$persistence_category_raw, levels = PERSISTENCE_LEVELS)
+
+knitr::kable(
+  persistence_raw |> count(persistence_category_raw, .drop = FALSE),
+  caption = "Jumlah provinsi per kategori -- versi p mentah (eksploratif, TIDAK dikoreksi FDR)"
+)
+```
+
+# 10. Peta hotspot/coldspot persisten
+
+Semua 38 provinsi ditampilkan, termasuk "Not significant" (abu-abu) --
+tidak di-drop dari peta maupun legenda, sesuai acceptance criteria.
+
+```{r map-persistence, fig.width=8, fig.height=5}
+persistence_colors <- c(
+  "Persistent Hotspot"  = "#d7191c",
+  "Persistent Coldspot" = "#2c7bb6",
+  "Sporadic Hotspot"    = "#fdae61",
+  "Sporadic Coldspot"   = "#abd9e9",
+  "Mixed/Unstable"      = "#984ea3",
+  "Not significant"     = "#e0e0e0"
+)
+
+map_data <- boundary_sf |>
+  left_join(persistence, by = "province")
+
+ggplot(map_data) +
+  geom_sf(aes(fill = persistence_category), color = "white", linewidth = 0.1) +
+  scale_fill_manual(values = persistence_colors, name = "Kategori", drop = FALSE) +
+  labs(
+    title = "Hotspot/coldspot persisten (FDR-corrected), 2024-01 s.d. 2025-12",
+    subtitle = paste0("Ambang persistence: signifikan (FDR<0.05) di >= ", PERSISTENCE_THRESHOLD_MONTHS, "/24 bulan")
+  ) +
+  theme_minimal() +
+  theme(axis.text = element_blank(), axis.ticks = element_blank())
+```
+
+Peta pembanding (eksploratif, **belum** dikoreksi FDR) kalau peta di
+atas didominasi abu-abu, peta ini menunjukkan pola mentah yang masih ada
+sebelum koreksi multiple testing diterapkan. **Jangan jadikan peta ini
+sebagai klaim final, fungsinya cuma menunjukkan "ada apa di baliknya"
+sebelum dikoreksi, bukan pengganti hasil yang rigorous di atas.
+
+```{r map-persistence-raw, fig.width=8, fig.height=5}
+map_data_raw <- boundary_sf |> left_join(persistence_raw, by = "province")
+
+ggplot(map_data_raw) +
+  geom_sf(aes(fill = persistence_category_raw), color = "white", linewidth = 0.1) +
+  scale_fill_manual(values = persistence_colors, name = "Kategori", drop = FALSE) +
+  labs(
+    title = "Hotspot/coldspot persisten (p mentah, TIDAK dikoreksi FDR) -- eksploratif",
+    subtitle = paste0("Ambang persistence: signifikan (p<", ALPHA, ", mentah) di >= ", PERSISTENCE_THRESHOLD_MONTHS, "/24 bulan")
+  ) +
+  theme_minimal() +
+  theme(axis.text = element_blank(), axis.ticks = element_blank())
+```
+
+# 11. Stabilitas klasifikasi antarbulan
+
+Selain kategori akhir, ditampilkan juga seberapa sering label tiap
+provinsi **berubah** dari satu bulan ke bulan berikutnya -- ukuran
+stabilitas langsung, terpisah dari kategori persistence itu sendiri.
+
+```{r stability-transitions}
+transitions <- monthly_lisa |>
+  arrange(province, match(period, periods)) |>
+  group_by(province) |>
+  mutate(label_change = label_fdr != lag(label_fdr)) |>
+  summarise(
+    n_transitions = sum(label_change, na.rm = TRUE),
+    n_distinct_labels = n_distinct(label_fdr),
+    .groups = "drop"
+  ) |>
+  right_join(tibble(province = province_order), by = "province") |>
+  arrange(match(province, province_order))
+
+knitr::kable(
+  transitions,
+  caption = "Jumlah pergantian label FDR antarbulan per provinsi (0 = label sama sepanjang 24 bulan)"
+)
+```
+
+# 12. Menyimpan hasil
+
+```{r save-results}
+write_csv(monthly_lisa, file.path(CURATED, "hotspot_monthly_lisa_R.csv"))
+write_csv(persistence, file.path(CURATED, "hotspot_persistence_R.csv"))
+write_csv(persistence_raw, file.path(CURATED, "hotspot_persistence_raw_R.csv"))
+write_csv(transitions, file.path(CURATED, "hotspot_stability_transitions_R.csv"))
+
+cat("Tersimpan: hotspot_monthly_lisa_R.csv, hotspot_persistence_R.csv, hotspot_persistence_raw_R.csv, hotspot_stability_transitions_R.csv\n")
+```
+
+# 13. Validation manifest
+
+```{r validation}
+checks <- list(
+  n_provinces_is_38 = length(province_order) == 38,
+  n_months_is_24 = length(periods) == 24,
+  no_na_in_monthly_variable = !any(is.na(panel$treatment_started_per_100k_population)),
+  no_island_in_primary = n_island_primary == 0,
+  primary_has_1_connected_component = n_components_primary == 1,
+  all_provinces_have_persistence_category = !any(is.na(persistence$persistence_category)),
+  all_6_categories_in_legend = length(levels(persistence$persistence_category)) == 6
+)
+
+failed_checks <- names(checks)[!unlist(checks)]
+overall_status <- if (length(failed_checks) == 0) "PASS" else "FAIL"
+
+cat("Status keseluruhan:", overall_status, "\n")
+if (length(failed_checks) > 0) cat("Gagal:", paste(failed_checks, collapse = ", "), "\n")
+
+validation <- list(
+  generated_at = format(Sys.time(), tz = "UTC", usetz = TRUE),
+  variable = "treatment_started_per_100k_population, per bulan (24 cross-section)",
+  weights_primary = "spatial_weights_v2_queen_bridge.csv (dari S2-DAM-01)",
+  persistence_definition = list(
+    threshold_months = PERSISTENCE_THRESHOLD_MONTHS,
+    total_months = length(periods),
+    significance_basis = "p_fdr < alpha (BUKAN p mentah)",
+    categories = PERSISTENCE_LEVELS,
+    pre_specified_before_running = TRUE
+  ),
+  reproducibility = list(seed = SEED, n_permutations = N_PERMUTATIONS, alpha = ALPHA),
+  category_counts = as.list(table(persistence$persistence_category)),
+  validation_checks = checks,
+  failed_checks = failed_checks,
+  status = overall_status
+)
+
+write_json(validation, file.path(CURATED, "hotspot_persistence_validation_R.json"), pretty = TRUE, auto_unbox = TRUE)
+cat("Tersimpan: hotspot_persistence_validation_R.json\n")
+```
+
+# 14. Interpretasi dan keterbatasan
+
+- Kategori "Not significant" **sengaja ditampilkan**, bukan dihilangkan --
+  kalau jumlahnya besar, itu temuan yang jujur (konsisten dengan hasil
+  S2-DAM-02 yang juga menunjukkan sedikit signifikansi setelah FDR),
+  bukan kegagalan analisis.
+- Ambang 12/24 bulan bersifat pre-specified sesuai bagian 2. Kalau tim
+  ingin mencoba ambang lain (mis. 8/24), itu keputusan metodologis baru
+  yang harus didokumentasikan terpisah, bukan menggantikan definisi ini
+  secara diam-diam.
+- Hanya 24 bulan data tersedia -- "persisten" di sini artinya persisten
+  *dalam rentang data yang ada*, bukan klaim jangka panjang.
+- Seperti LISA di S2-DAM-02, daya statistik terbatas untuk 38 unit; lihat
+  `docs/lisa-memo.md` untuk diskusi lebih lengkap soal ini.

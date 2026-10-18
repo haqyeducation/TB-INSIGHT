@@ -1,0 +1,82 @@
+{
+  "boundary_source": "Badan Informasi Geospasial (BIG)",
+  "boundary_source_url": "https://geoservices.big.go.id/rbi/rest/services/BATASWILAYAH/BATAS_WILAYAH/MapServer/12",
+  "province_count": 38,
+  "crs": "EPSG:4326",
+  "all_geometries_valid": true,
+  "queen_edges": 38,
+  "bridge_edges": 11,
+  "total_primary_edges": 49,
+  "connected_primary_graph": true,
+  "components_before_bridging": 12,
+  "bridge_rule": "Iteratively join the two closest polygons in different components in EPSG:6933",
+  "bridges": [
+    {
+      "province_code_i": "35",
+      "province_code_j": "51",
+      "edge_type": "bridge_shortest_component",
+      "distance_km": 1.2223089950124828
+    },
+    {
+      "province_code_i": "52",
+      "province_code_j": "53",
+      "edge_type": "bridge_shortest_component",
+      "distance_km": 2.9694227353572207
+    },
+    {
+      "province_code_i": "14",
+      "province_code_j": "21",
+      "edge_type": "bridge_shortest_component",
+      "distance_km": 5.964945799788354
+    },
+    {
+      "province_code_i": "18",
+      "province_code_j": "36",
+      "edge_type": "bridge_shortest_component",
+      "distance_km": 8.605037488585587
+    },
+    {
+      "province_code_i": "16",
+      "province_code_j": "19",
+      "edge_type": "bridge_shortest_component",
+      "distance_km": 9.032929328104062
+    },
+    {
+      "province_code_i": "72",
+      "province_code_j": "82",
+      "edge_type": "bridge_shortest_component",
+      "distance_km": 10.030834782651404
+    },
+    {
+      "province_code_i": "82",
+      "province_code_j": "92",
+      "edge_type": "bridge_shortest_component",
+      "distance_km": 14.778339315339357
+    },
+    {
+      "province_code_i": "51",
+      "province_code_j": "52",
+      "edge_type": "bridge_shortest_component",
+      "distance_km": 19.74662906002561
+    },
+    {
+      "province_code_i": "21",
+      "province_code_j": "61",
+      "edge_type": "bridge_shortest_component",
+      "distance_km": 27.30489120477189
+    },
+    {
+      "province_code_i": "64",
+      "province_code_j": "76",
+      "edge_type": "bridge_shortest_component",
+      "distance_km": 46.55131171999248
+    },
+    {
+      "province_code_i": "53",
+      "province_code_j": "81",
+      "edge_type": "bridge_shortest_component",
+      "distance_km": 63.115381493423925
+    }
+  ],
+  "note": "Bridges represent analytical neighbourhood links across water, not shared administrative borders."
+}

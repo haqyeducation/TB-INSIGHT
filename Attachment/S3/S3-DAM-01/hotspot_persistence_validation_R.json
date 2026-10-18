@@ -1,0 +1,36 @@
+{
+  "generated_at": "2026-09-21 02:29:52 UTC",
+  "variable": "treatment_started_per_100k_population, per bulan (24 cross-section)",
+  "weights_primary": "spatial_weights_v2_queen_bridge.csv (dari S2-DAM-01)",
+  "persistence_definition": {
+    "threshold_months": 12,
+    "total_months": 24,
+    "significance_basis": "p_fdr < alpha (BUKAN p mentah)",
+    "categories": ["Persistent Hotspot", "Persistent Coldspot", "Sporadic Hotspot", "Sporadic Coldspot", "Mixed/Unstable", "Not significant"],
+    "pre_specified_before_running": true
+  },
+  "reproducibility": {
+    "seed": 20260902,
+    "n_permutations": 999,
+    "alpha": 0.05
+  },
+  "category_counts": {
+    "Persistent Hotspot": 0,
+    "Persistent Coldspot": 0,
+    "Sporadic Hotspot": 0,
+    "Sporadic Coldspot": 0,
+    "Mixed/Unstable": 0,
+    "Not significant": 38
+  },
+  "validation_checks": {
+    "n_provinces_is_38": true,
+    "n_months_is_24": true,
+    "no_na_in_monthly_variable": true,
+    "no_island_in_primary": true,
+    "primary_has_1_connected_component": true,
+    "all_provinces_have_persistence_category": true,
+    "all_6_categories_in_legend": true
+  },
+  "failed_checks": [],
+  "status": "PASS"
+}

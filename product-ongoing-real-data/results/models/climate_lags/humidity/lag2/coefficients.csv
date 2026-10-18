@@ -1,0 +1,2 @@
+term,coefficient_log_rate,cluster_robust_se,incidence_rate_ratio,irr_ci95_low,irr_ci95_high,p_value
+relative_humidity_pct_z_lag2,-0.0018507410456450163,0.005426551086985317,0.9981509705195132,0.9875908551971616,1.0088240030838933,0.7330637496444832

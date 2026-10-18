@@ -1,0 +1,2 @@
+term,coefficient_log_rate,cluster_robust_se,incidence_rate_ratio,irr_ci95_low,irr_ci95_high,p_value
+temperature_c_z_lag2,-0.0026637657610135822,0.005083966517568564,0.9973397789149072,0.9874510627581436,1.0073275244928919,0.6003103748527228

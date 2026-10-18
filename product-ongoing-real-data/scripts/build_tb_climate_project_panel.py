@@ -28,7 +28,7 @@ def source_ledger() -> pd.DataFrame:
         {
             "dataset_id": "BPS_PROVINCE_ANNUAL_COVARIATES",
             "publisher": "Badan Pusat Statistik",
-            "source_url": "https://www.bps.go.id/",
+            "source_url": "https://www.bps.go.id/id/publication/2025/02/28/8cfe1a589ad3693396d3db9f/statistik-indonesia-2025.html ; https://www.bps.go.id/id/publication/2025/11/28/69563c639b0a87bb38837064/penghitungan-dan-analisis-kemiskinan-makro-di-indonesia-2025.html",
             "coverage": "38 provinces; annual; 2023-2026 depending on indicator",
             "role": "Population offset and structural covariates",
             "status": "Complete for population, density, sanitation, poverty in 2024-2025",
@@ -121,6 +121,8 @@ def build_codebook(columns: list[str]) -> pd.DataFrame:
             definition, unit, source = (f"One-month lag of {column[:-5]}", "same as base variable", "Derived")
         elif column.endswith("_lag2"):
             definition, unit, source = (f"Two-month lag of {column[:-5]}", "same as base variable", "Derived")
+        elif column.endswith("_lag3"):
+            definition, unit, source = (f"Three-month lag of {column[:-5]}", "same as base variable", "Derived")
         elif column.endswith("_mean_lag0_2"):
             definition, unit, source = (f"Mean of current and prior two months for {column[:-12]}", "same as base variable", "Derived")
         else:
@@ -166,10 +168,10 @@ def main() -> None:
         "population", "population_density_per_km2", "population_reference_date", "sanitation_access_pct",
         "sanitation_reference_period", "poverty_pct", "poverty_reference_period", "temperature_c",
         "relative_humidity_pct", "precipitation_mm", "temperature_c_anomaly", "temperature_c_z",
-        "temperature_c_z_lag1", "temperature_c_z_lag2", "temperature_c_z_mean_lag0_2",
+        "temperature_c_z_lag1", "temperature_c_z_lag2", "temperature_c_z_lag3", "temperature_c_z_mean_lag0_2",
         "relative_humidity_pct_anomaly", "relative_humidity_pct_z", "relative_humidity_pct_z_lag1",
-        "relative_humidity_pct_z_lag2", "relative_humidity_pct_z_mean_lag0_2", "precipitation_mm_anomaly",
-        "precipitation_mm_z", "precipitation_mm_z_lag1", "precipitation_mm_z_lag2",
+        "relative_humidity_pct_z_lag2", "relative_humidity_pct_z_lag3", "relative_humidity_pct_z_mean_lag0_2", "precipitation_mm_anomaly",
+        "precipitation_mm_z", "precipitation_mm_z_lag1", "precipitation_mm_z_lag2", "precipitation_mm_z_lag3",
         "precipitation_mm_z_mean_lag0_2", "heavy_rain_anomaly", "hot_anomaly", "climate_spatial_method",
         "climate_grid_cells", "event_record_count", "hydrometeorological_events", "flood_events",
         "landslide_events", "extreme_weather_events", "drought_events", "wildfire_events",

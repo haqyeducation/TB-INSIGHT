@@ -12,6 +12,8 @@ TB-INSIGHT adalah project riset ekologi **spatio-temporal** untuk menganalisis p
 4. Gunakan [panel analisis final](data/processed/analysis_panel_tb_climate_disaster_2024_2025.csv).
 5. Periksa [codebook](data/processed/analysis_panel_tb_climate_codebook.csv) sebelum memakai variabel.
 6. Periksa [source ledger](data/processed/project_source_ledger.csv) sebelum menulis klaim atau sitasi data.
+7. Untuk hasil koreksi Sprint 3, baca [S3 canonical rebuild](docs/S3_REBUILD_REPORT.md).
+8. Untuk melanjutkan ke Sprint 4, gunakan [workbook arahan M3 ke S4](../outputs/2026-10-18-m3-to-s4-github/TB_INSIGHT_M3_to_S4_Direction.xlsx). Path input di dalamnya relatif terhadap root repository.
 
 ## Struktur folder
 
@@ -67,8 +69,8 @@ Frontend pada terminal kedua:
 
 ```powershell
 cd frontend
-npm ci
-npm run dev
+pnpm install --frozen-lockfile=false
+pnpm run dev
 ```
 
 API berjalan di `http://localhost:8000`, sedangkan Vite menampilkan alamat frontend pada terminal. Untuk deployment, project juga menyediakan `Dockerfile`.
@@ -87,3 +89,7 @@ API berjalan di `http://localhost:8000`, sedangkan Vite menampilkan alamat front
 - [Workbook panel TB–iklim](deliverables/tb_climate_project_analysis_ready.xlsx)
 - [Workbook TB nasional dan provinsi](deliverables/tb_national_province_analysis_ready.xlsx)
 - [Hasil PPML awal](results/preliminary_tb_climate_ppml_results.csv)
+- [Model lag iklim 0–3](results/models/climate_lags/coefficients_all_lags.csv)
+- [Model interaksi iklim × sosial](results/models/social_interactions/coefficients_all_interactions.csv)
+- [Hasil LISA bulanan](results/spatial/hotspot_monthly_lisa.csv)
+- [Boundary dan weights kanonis](data/processed/spatial/)

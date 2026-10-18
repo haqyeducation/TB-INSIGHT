@@ -1,121 +1,150 @@
 import { useEffect, useMemo, useState } from 'react';
 import axios from 'axios';
-import {
-  AlertCircle, Database, ExternalLink, FileCheck2,
-  LineChart as LineChartIcon, MapPinned, ShieldCheck,
-} from 'lucide-react';
-import {
-  Bar, BarChart, CartesianGrid, Legend, Line, LineChart,
-  ResponsiveContainer, Tooltip, XAxis, YAxis,
-} from 'recharts';
+import { GeoJSON, MapContainer, TileLayer } from 'react-leaflet';
+import 'leaflet/dist/leaflet.css';
+import { Activity, AlertTriangle, ChevronRight, Database, Download, FileCheck2, FlaskConical, LayoutDashboard, Map as MapIcon, Search, ShieldCheck } from 'lucide-react';
+import { CartesianGrid, Legend, Line, LineChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts';
 
 const API = import.meta.env.VITE_API_BASE_URL || '/api';
-const nf = new Intl.NumberFormat('id-ID');
-const pct = (value) => value == null ? '—' : `${nf.format(value)}%`;
-const indicatorLabels = {
-  suspected: 'Terduga', tested: 'Testing', notified: 'Notifikasi kasus', treated: 'Memulai pengobatan',
+const nf = new Intl.NumberFormat('id-ID', { maximumFractionDigits: 2 });
+const pages = [
+  ['ringkasan', 'Ringkasan', LayoutDashboard], ['tren', 'Tren', Activity],
+  ['peta', 'Peta', MapIcon], ['provinsi', 'Provinsi', Search],
+  ['metode', 'Metode', FlaskConical], ['sumber', 'Sumber', Database],
+];
+const metricOptions = {
+  rate: ['treatment_started_per_100k', 'Mulai pengobatan per 100.000'],
+  count: ['jumlah_pasien', 'Jumlah mulai pengobatan'],
+  precipitation: ['precipitation_mm_z', 'Anomali presipitasi'],
+  poverty: ['poverty_pct', 'Kemiskinan BPS (%)'],
 };
-const colors = { suspected: '#0f766e', tested: '#2563eb', notified: '#dc2626', treated: '#7c3aed' };
+
+function useRoute() {
+  const [route, setRoute] = useState(() => window.location.hash.slice(1) || 'ringkasan');
+  useEffect(() => {
+    const listener = () => setRoute(window.location.hash.slice(1) || 'ringkasan');
+    window.addEventListener('hashchange', listener);
+    return () => window.removeEventListener('hashchange', listener);
+  }, []);
+  return route;
+}
 
 function App() {
+  const route = useRoute();
+  const initial = new URLSearchParams(window.location.search);
+  const [filters, setFilters] = useState({
+    province: initial.get('province') || 'ALL', start: initial.get('start') || '2024-01',
+    end: initial.get('end') || '2025-12', focus: initial.get('focus') || '2025-12',
+    metric: initial.get('metric') || 'rate',
+  });
   const [data, setData] = useState(null);
+  const [lisa, setLisa] = useState([]);
   const [error, setError] = useState('');
-  const [trendYear, setTrendYear] = useState(2024);
-  const [bpsYear, setBpsYear] = useState(2024);
 
   useEffect(() => {
     Promise.all([
-      axios.get(`${API}/summary`), axios.get(`${API}/tb/national-monthly`),
-      axios.get(`${API}/analysis/province-2024`), axios.get(`${API}/bps/province-annual`),
+      axios.get(`${API}/summary`), axios.get(`${API}/analysis/panel`),
+      axios.get(`${API}/spatial/provinces`), axios.get(`${API}/provenance`),
       axios.get(`${API}/metadata`),
-    ])
-      .then(([summary, monthly, province, bps, metadata]) => setData({
-        summary: summary.data, monthly: monthly.data, province: province.data,
-        bps: bps.data, metadata: metadata.data,
-      }))
-      .catch((requestError) => setError(requestError.response?.data?.detail || requestError.message));
+    ]).then(([summary, panel, boundary, provenance, metadata]) => setData({
+      summary: summary.data, panel: panel.data, boundary: boundary.data,
+      provenance: provenance.data, metadata: metadata.data,
+    })).catch((err) => setError(err.response?.data?.detail || err.message));
   }, []);
 
-  const trend = useMemo(() => {
-    if (!data) return [];
-    const rows = data.monthly.filter((row) => Number(row.year) === trendYear);
-    return [...new Set(rows.map((row) => row.period))].sort().map((period) => {
-      const point = { period: period.slice(5) };
-      rows.filter((row) => row.period === period).forEach((row) => { point[row.indicator] = row.value; });
-      return point;
+  useEffect(() => {
+    axios.get(`${API}/spatial/lisa`, { params: { period: filters.focus } })
+      .then((response) => setLisa(response.data)).catch(() => setLisa([]));
+    const query = new URLSearchParams(filters);
+    window.history.replaceState(null, '', `${window.location.pathname}?${query}#${route}`);
+  }, [filters, route]);
+
+  const provinces = useMemo(() => data ? [...new Map(data.panel.map((r) => [r.province_code, r.province])).entries()] : [], [data]);
+  const filtered = useMemo(() => data ? data.panel.filter((r) =>
+    r.period >= filters.start && r.period <= filters.end &&
+    (filters.province === 'ALL' || r.province_code === filters.province)) : [], [data, filters]);
+  const focusRows = useMemo(() => data ? data.panel.filter((r) => r.period === filters.focus) : [], [data, filters.focus]);
+  const series = useMemo(() => {
+    const key = metricOptions[filters.metric][0];
+    const grouped = new Map();
+    filtered.forEach((row) => {
+      const current = grouped.get(row.period) || { period: row.period, value: 0, n: 0 };
+      current.value += Number(row[key] || 0); current.n += 1; grouped.set(row.period, current);
     });
-  }, [data, trendYear]);
+    return [...grouped.values()].sort((a, b) => a.period.localeCompare(b.period)).map((row) => ({
+      ...row, value: filters.metric === 'count' ? row.value : row.value / row.n,
+    }));
+  }, [filtered, filters.metric]);
 
-  const provinceRows = useMemo(() => data
-    ? [...data.province].sort((a, b) => b.tb_cases_total - a.tb_cases_total)
-    : [], [data]);
-  const bpsRows = useMemo(() => data
-    ? data.bps.filter((row) => Number(row.year) === bpsYear).sort((a, b) => b.population - a.population)
-    : [], [data, bpsYear]);
+  if (error) return <State icon={AlertTriangle} title="Data tidak dapat dimuat" text={error} />;
+  if (!data) return <State icon={Database} title="Memuat data resmi" text="Menyiapkan panel dan geometri provinsi…" />;
 
-  if (error) return <main className="center-state"><AlertCircle /><h1>Data belum dapat dimuat</h1><p>{error}</p></main>;
-  if (!data) return <main className="center-state"><Database className="pulse" /><h1>Memuat data resmi…</h1></main>;
-
-  const topTen = provinceRows.slice(0, 10).map((row) => ({ province: row.province, cases: row.tb_cases_total }));
-
-  return (
-    <div className="app-shell">
-      <header className="topbar">
-        <a className="brand" href="#overview"><span className="brand-mark">TB</span><span>TB-INSIGHT<small>Indonesia · data resmi</small></span></a>
-        <nav><a href="#trend">Tren nasional</a><a href="#province">Provinsi</a><a href="#bps">BPS</a><a href="#sources">Sumber</a></nav>
-      </header>
-
+  const update = (key, value) => setFilters((current) => ({ ...current, [key]: value }));
+  return <div className="shell">
+    <aside className="sidebar">
+      <a className="logo" href="#ringkasan"><span>TB</span><div>TB-INSIGHT<small>Indonesia</small></div></a>
+      <nav>{pages.map(([id, label, Icon]) => <a key={id} href={`#${id}`} className={route === id ? 'active' : ''}><Icon size={18}/>{label}</a>)}</nav>
+      <div className="verified"><ShieldCheck size={19}/><div><strong>Real data only</strong><small>Kemenkes · BPS · NASA · BIG · BNPB</small></div></div>
+    </aside>
+    <div className="workspace">
+      <header><div><span className="kicker">TB surveillance workspace</span><h1>{pages.find((p) => p[0] === route)?.[1] || 'Ringkasan'}</h1></div><a className="download" href={`${API}/download/panel.csv`}><Download size={16}/> Unduh panel</a></header>
+      <FilterBar filters={filters} provinces={provinces} update={update}/>
       <main>
-        <section className="hero" id="overview">
-          <div>
-            <span className="eyebrow"><ShieldCheck size={16}/> Dataset terverifikasi</span>
-            <h1>Pemantauan TBC Indonesia berbasis data pemerintah</h1>
-            <p>Seri nasional bulanan SITB, indikator provinsi Kemenkes, dan kovariat resmi BPS. Setiap periode dan keterbatasan dipertahankan tanpa imputasi geografis.</p>
-          </div>
-          <div className="hero-status">
-            <FileCheck2 size={22}/><div><strong>Provinsi-bulanan resmi sudah tersedia</strong><span>{data.summary.province_month_status}. Interpretasikan sebagai kohort mulai pengobatan, bukan insidensi.</span></div>
-          </div>
-        </section>
-
-        <section className="stats-grid">
-          <article><FileCheck2/><span>Kasus TBC 2024</span><strong>{nf.format(data.summary.tb_cases_2024)}</strong><small>Kemenkes · 38 provinsi</small></article>
-          <article><MapPinned/><span>Cakupan wilayah</span><strong>{data.summary.province_count} provinsi</strong><small>Bulanan 2024-2025</small></article>
-          <article><LineChartIcon/><span>Seri nasional</span><strong>{data.summary.national_month_indicators} indikator</strong><small>{data.summary.national_month_period_min}—{data.summary.national_month_period_max}</small></article>
-          <article><Database/><span>Kovariat BPS</span><strong>2023—2026</strong><small>Periode asli dipertahankan</small></article>
-        </section>
-
-        <section className="panel" id="trend">
-          <div className="section-heading"><div><span className="eyebrow">SITB · nasional bulanan</span><h2>Alur penemuan dan pengobatan TBC</h2><p>Nilai bulanan hasil ekspor crosstab Dashboard TB Kemenkes.</p></div><label>Tahun<select value={trendYear} onChange={(event) => setTrendYear(Number(event.target.value))}>{[2023, 2024, 2025, 2026].map((year) => <option key={year}>{year}</option>)}</select></label></div>
-          <div className="chart-wrap"><ResponsiveContainer width="100%" height="100%"><LineChart data={trend}><CartesianGrid strokeDasharray="3 3" vertical={false}/><XAxis dataKey="period"/><YAxis tickFormatter={(value) => `${Math.round(value / 1000)}k`}/><Tooltip formatter={(value, name) => [nf.format(value), indicatorLabels[name]]}/><Legend formatter={(name) => indicatorLabels[name]}/>{Object.keys(indicatorLabels).map((key) => <Line key={key} type="monotone" dataKey={key} stroke={colors[key]} strokeWidth={3} dot={{ r: 3 }} connectNulls={false} isAnimationActive={false}/>)}</LineChart></ResponsiveContainer></div>
-          {trendYear === 2026 && <p className="footnote">Seri 2026 pada sumber publik tersedia sampai Juni 2026; jangan membandingkan total tahun berjalan langsung dengan total tahun penuh.</p>}
-        </section>
-
-        <section className="two-column" id="province">
-          <article className="panel">
-            <div className="section-heading compact"><div><span className="eyebrow">Kemenkes · 2024</span><h2>10 provinsi dengan kasus terbanyak</h2></div></div>
-            <div className="chart-wrap tall"><ResponsiveContainer width="100%" height="100%"><BarChart data={topTen} layout="vertical" margin={{ left: 42 }}><CartesianGrid strokeDasharray="3 3" horizontal={false}/><XAxis type="number" tickFormatter={(value) => `${Math.round(value / 1000)}k`}/><YAxis type="category" dataKey="province" width={112} tick={{ fontSize: 11 }}/><Tooltip formatter={(value) => nf.format(value)}/><Bar dataKey="cases" fill="#0f766e" radius={[0, 6, 6, 0]} isAnimationActive={false}/></BarChart></ResponsiveContainer></div>
-          </article>
-          <article className="panel table-panel">
-            <div className="section-heading compact"><div><span className="eyebrow">Panel analisis · 2024</span><h2>TB dan konteks BPS</h2></div></div>
-            <div className="table-scroll"><table><thead><tr><th>Provinsi</th><th>Kasus</th><th>CNR/100k</th><th>TC</th><th>Penduduk</th><th>Kepadatan</th><th>Sanitasi</th></tr></thead><tbody>{provinceRows.map((row) => <tr key={row.province_code}><td>{row.province}</td><td>{nf.format(row.tb_cases_total)}</td><td>{nf.format(row.case_notification_rate_per_100k)}</td><td>{pct(row.treatment_coverage_pct)}</td><td>{nf.format(row.population)}</td><td>{nf.format(row.population_density_per_km2)}</td><td>{pct(row.sanitation_access_pct)}</td></tr>)}</tbody></table></div>
-          </article>
-        </section>
-
-        <section className="panel table-panel" id="bps">
-          <div className="section-heading"><div><span className="eyebrow">BPS · 38 provinsi</span><h2>Kovariat sosial-demografi</h2><p>Populasi dan kepadatan adalah proyeksi pertengahan tahun. Kemiskinan dan sanitasi mengikuti periode survei yang tercantum.</p></div><label>Tahun<select value={bpsYear} onChange={(event) => setBpsYear(Number(event.target.value))}>{[2023, 2024, 2025, 2026].map((year) => <option key={year}>{year}</option>)}</select></label></div>
-          <div className="table-scroll bps-table"><table><thead><tr><th>Provinsi</th><th>Penduduk</th><th>Jiwa/km²</th><th>Akses sanitasi</th><th>Kemiskinan</th><th>Periode rujukan</th></tr></thead><tbody>{bpsRows.map((row) => <tr key={`${row.province_code}-${row.year}`}><td>{row.province}</td><td>{nf.format(row.population)}</td><td>{nf.format(row.population_density_per_km2)}</td><td>{pct(row.sanitation_access_pct)}</td><td>{pct(row.poverty_pct)}</td><td>{row.poverty_reference_period || row.sanitation_reference_period || row.population_reference_date}</td></tr>)}</tbody></table></div>
-          <p className="footnote">Tanda “—” berarti indikator tersebut tidak tersedia untuk periode itu; nilai tidak diisi dengan interpolasi.</p>
-        </section>
-
-        <section className="panel" id="sources">
-          <div className="section-heading compact"><div><span className="eyebrow">Provenance</span><h2>Sumber dan batas penggunaan</h2></div></div>
-          <div className="source-grid">{data.metadata.sources.map((source) => <a key={source.dataset} href={source.url} target="_blank" rel="noreferrer"><Database/><div><strong>{source.dataset}</strong><span>{source.publisher}</span><small>{source.coverage}</small></div><ExternalLink size={17}/></a>)}</div>
-          <div className="limitations"><h3><AlertCircle size={18}/> Batas interpretasi</h3><ul>{data.metadata.limitations.map((item) => <li key={item}>{item}</li>)}</ul></div>
-        </section>
+        {route === 'ringkasan' && <Summary data={data} filtered={filtered} />}
+        {route === 'tren' && <Trend series={series} filters={filters} />}
+        {route === 'peta' && <SpatialMap boundary={data.boundary} rows={focusRows} lisa={lisa} filters={filters} />}
+        {route === 'provinsi' && <ProvinceProfile rows={filtered} provinces={provinces} filters={filters} update={update} />}
+        {route === 'metode' && <Methods />}
+        {route === 'sumber' && <Sources provenance={data.provenance} metadata={data.metadata} />}
       </main>
-      <footer>TB-INSIGHT · pipeline reproducible untuk data resmi Kemenkes dan BPS</footer>
     </div>
-  );
+  </div>;
 }
+
+function FilterBar({ filters, provinces, update }) {
+  return <section className="filters">
+    <label>Wilayah<select value={filters.province} onChange={(e) => update('province', e.target.value)}><option value="ALL">Seluruh Indonesia</option>{provinces.map(([code, name]) => <option value={code} key={code}>{name}</option>)}</select></label>
+    <label>Dari<input type="month" value={filters.start} min="2024-01" max="2025-12" onChange={(e) => update('start', e.target.value)}/></label>
+    <label>Sampai<input type="month" value={filters.end} min="2024-01" max="2025-12" onChange={(e) => update('end', e.target.value)}/></label>
+    <label>Bulan peta<input type="month" value={filters.focus} min="2024-01" max="2025-12" onChange={(e) => update('focus', e.target.value)}/></label>
+    <label>Indikator<select value={filters.metric} onChange={(e) => update('metric', e.target.value)}>{Object.entries(metricOptions).map(([key, [, label]]) => <option value={key} key={key}>{label}</option>)}</select></label>
+  </section>;
+}
+
+function Summary({ data, filtered }) {
+  const total = filtered.reduce((sum, row) => sum + Number(row.jumlah_pasien), 0);
+  const pending = filtered.reduce((sum, row) => sum + Number(row.belum_ada_hasil), 0);
+  const mature = filtered.filter((row) => row.cohort_maturity_flag === 'mature_le_5pct_pending').length;
+  return <><section className="hero"><div><span className="pill"><FileCheck2 size={15}/> Panel tervalidasi</span><h2>Melihat pola TB, iklim, dan kerentanan sosial tanpa menyamarkan keterbatasan data.</h2><p>Unit analisis adalah provinsi-bulan. Outcome merupakan kohort pasien yang memulai pengobatan TBC sensitif obat, bukan estimasi insidensi.</p></div><div className="notice"><AlertTriangle/><div><strong>2025 masih provisional</strong><span>Outcome pasien dapat berubah saat kohort menjadi lebih matang. Gunakan jumlah mulai pengobatan sebagai outcome utama.</span></div></div></section>
+  <section className="cards"><Card label="Mulai pengobatan" value={nf.format(total)} note={`${filtered.length} observasi provinsi-bulan`}/><Card label="Outcome tertunda" value={nf.format(pending)} note="Belum ada hasil"/><Card label="Kohort matang" value={`${mature}/${filtered.length}`} note="Pending ≤ 5%"/><Card label="Cakupan" value={`${data.summary.province_count} provinsi`} note="Januari 2024–Desember 2025"/></section>
+  <section className="panel next"><div><span className="kicker">Mulai eksplorasi</span><h3>Alur analisis yang disarankan</h3></div><div className="steps"><a href="#tren">1. Periksa tren temporal<ChevronRight/></a><a href="#peta">2. Bandingkan pola spasial<ChevronRight/></a><a href="#provinsi">3. Baca profil provinsi<ChevronRight/></a><a href="#metode">4. Verifikasi metode<ChevronRight/></a></div></section></>;
+}
+
+function Trend({ series, filters }) {
+  return <section className="panel"><div className="panel-head"><div><span className="kicker">Seri waktu</span><h2>{metricOptions[filters.metric][1]}</h2><p>Rentang {filters.start}—{filters.end}. Garis agregat berupa jumlah untuk count dan rerata provinsi untuk indikator lain.</p></div></div><div className="chart"><ResponsiveContainer width="100%" height="100%"><LineChart data={series}><CartesianGrid strokeDasharray="3 3" vertical={false}/><XAxis dataKey="period"/><YAxis/><Tooltip formatter={(v) => nf.format(v)}/><Legend/><Line dataKey="value" name={metricOptions[filters.metric][1]} stroke="#0f766e" strokeWidth={3} dot={{ r: 3 }} isAnimationActive={false}/></LineChart></ResponsiveContainer></div><p className="caption">Perubahan temporal bersifat deskriptif; dua tahun data belum cukup untuk menyimpulkan siklus iklim jangka panjang.</p></section>;
+}
+
+function SpatialMap({ boundary, rows, lisa, filters }) {
+  const key = metricOptions[filters.metric][0];
+  const values = rows.map((r) => Number(r[key])).filter(Number.isFinite);
+  const min = Math.min(...values), max = Math.max(...values);
+  const lookup = new globalThis.Map(rows.map((r) => [r.province_code, r]));
+  const lisaLookup = new globalThis.Map(lisa.map((r) => [r.province_code, r]));
+  const color = (value) => { const t = max === min ? .5 : (value - min) / (max - min); return t > .8 ? '#7f1d1d' : t > .6 ? '#dc2626' : t > .4 ? '#f97316' : t > .2 ? '#facc15' : '#d9f99d'; };
+  return <div className="map-layout"><section className="panel map-panel"><div className="panel-head"><div><span className="kicker">BIG · {filters.focus}</span><h2>{metricOptions[filters.metric][1]}</h2><p>Hover wilayah untuk nilai dan klasifikasi LISA. Bridge antarpulau hanya dipakai dalam analisis bobot.</p></div></div><MapContainer center={[-2.4, 118]} zoom={5} scrollWheelZoom className="map"><TileLayer attribution="&copy; OpenStreetMap" url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"/><GeoJSON key={`${filters.focus}-${filters.metric}`} data={boundary} style={(feature) => { const row = lookup.get(String(feature.properties.province_code).padStart(2, '0')); return { color: '#fff', weight: .7, fillOpacity: .82, fillColor: row ? color(Number(row[key])) : '#cbd5e1' }; }} onEachFeature={(feature, layer) => { const code = String(feature.properties.province_code).padStart(2, '0'); const row = lookup.get(code); const spot = lisaLookup.get(code); layer.bindTooltip(`<strong>${feature.properties.province}</strong><br/>${row ? nf.format(row[key]) : 'Tidak tersedia'}<br/>LISA FDR: ${spot?.cluster_fdr_0_05 || '—'}`); }}/></MapContainer></section><section className="panel legend"><h3>Legenda</h3><p>Warna relatif terhadap rentang bulan terpilih.</p><div className="gradient"/><div className="range"><span>{nf.format(min)}</span><span>{nf.format(max)}</span></div><hr/><h3>LISA</h3><p>{lisa.filter((r) => r.cluster_fdr_0_05 !== 'not_significant').length} provinsi signifikan setelah FDR pada bulan ini.</p><small>999 permutasi; queen contiguity + bridge terpendek yang terdokumentasi.</small></section></div>;
+}
+
+function ProvinceProfile({ rows, provinces, filters, update }) {
+  const code = filters.province === 'ALL' ? provinces[0]?.[0] : filters.province;
+  const selected = rows.filter((r) => r.province_code === code);
+  const latest = selected[selected.length - 1];
+  return <><section className="panel profile-head"><div><span className="kicker">Profil wilayah</span><h2>{latest?.province || 'Pilih provinsi'}</h2><p>Pilih wilayah pada filter global untuk melihat seri dan konteks sosialnya.</p></div>{filters.province === 'ALL' && <button onClick={() => update('province', code)}>Gunakan {latest?.province}</button>}</section>{latest && <section className="cards"><Card label="Mulai pengobatan terakhir" value={nf.format(latest.jumlah_pasien)} note={latest.period}/><Card label="Per 100.000" value={nf.format(latest.treatment_started_per_100k)} note="Penduduk BPS sebagai denominator"/><Card label="Kemiskinan" value={`${nf.format(latest.poverty_pct)}%`} note={latest.poverty_reference_period}/><Card label="Sanitasi" value={`${nf.format(latest.sanitation_access_pct)}%`} note={latest.sanitation_reference_period}/></section>}<section className="panel table-wrap"><table><thead><tr><th>Periode</th><th>Mulai pengobatan</th><th>Per 100k</th><th>Pending</th><th>Suhu z</th><th>Hujan z</th><th>Bencana</th></tr></thead><tbody>{selected.map((r) => <tr key={r.period}><td>{r.period}</td><td>{nf.format(r.jumlah_pasien)}</td><td>{nf.format(r.treatment_started_per_100k)}</td><td>{nf.format(r.pending_share * 100)}%</td><td>{nf.format(r.temperature_c_z)}</td><td>{nf.format(r.precipitation_mm_z)}</td><td>{nf.format(r.event_record_count)}</td></tr>)}</tbody></table></section></>;
+}
+
+function Methods() { return <section className="method-grid"><article className="panel"><span className="kicker">Unit analisis</span><h2>38 provinsi × 24 bulan</h2><p>Panel lengkap Januari 2024–Desember 2025. Populasi tahunan dipakai sebagai offset; kemiskinan dan sanitasi mempertahankan periode surveinya.</p></article><article className="panel"><span className="kicker">Model primer</span><h2>PPML fixed effects</h2><p>Outcome jumlah mulai pengobatan, offset log-populasi, fixed effects provinsi dan periode, serta standard error terklaster provinsi.</p></article><article className="panel"><span className="kicker">Spasial</span><h2>Queen + bridge transparan</h2><p>Kontiguitas darat dibangun dari BIG. Komponen kepulauan disambung melalui jarak polygon terpendek dan setiap bridge ditandai eksplisit.</p></article><article className="panel"><span className="kicker">Inferensi</span><h2>Eksploratif, bukan kausal</h2><p>Lag 0–3 dan sembilan interaksi sosial dilaporkan tanpa memilih hasil berdasarkan p-value. LISA menggunakan 999 permutasi dan FDR bulanan.</p></article></section>; }
+
+function Sources({ provenance, metadata }) { return <><section className="source-grid">{provenance.map((s) => <article className="panel" key={s.dataset_id}><Database/><span className="kicker">{s.publisher}</span><h3>{s.dataset_id}</h3><p>{s.coverage}</p><small>{s.limitation}</small><a href={s.source_url.split(' ; ')[0]} target="_blank" rel="noreferrer">Buka sumber resmi <ChevronRight size={15}/></a></article>)}</section><section className="panel"><h3>Batas penggunaan</h3><ul className="limitations">{metadata.limitations.map((item) => <li key={item}>{item}</li>)}</ul></section></>; }
+function Card({ label, value, note }) { return <article><span>{label}</span><strong>{value}</strong><small>{note}</small></article>; }
+function State({ icon: Icon, title, text }) { return <main className="state"><Icon/><h1>{title}</h1><p>{text}</p></main>; }
 
 export default App;
