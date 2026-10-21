@@ -1,0 +1,16 @@
+{
+  "model_id": "precipitation_lag0",
+  "formula": "jumlah_pasien ~ precipitation_mm_z + C(province_code) + C(period)",
+  "role": "lag sensitivity",
+  "run_timestamp_utc": "2026-10-17T15:19:31.201806+00:00",
+  "n_observations": 912,
+  "n_provinces": 38,
+  "n_periods": 24,
+  "converged": true,
+  "aic": 12675.779310865915,
+  "deviance": 4775.879710434933,
+  "outcome": "jumlah_pasien",
+  "offset": "log_population_offset",
+  "fixed_effects": "province_code + period",
+  "cluster": "province_code"
+}

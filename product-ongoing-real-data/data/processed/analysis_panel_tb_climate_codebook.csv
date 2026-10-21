@@ -38,16 +38,19 @@ temperature_c_anomaly,Temperature c anomaly,see source,Source/derived
 temperature_c_z,Temperature anomaly z-score relative to province calendar-month 1991-2020 normal,z-score,Derived
 temperature_c_z_lag1,One-month lag of temperature_c_z,same as base variable,Derived
 temperature_c_z_lag2,Two-month lag of temperature_c_z,same as base variable,Derived
+temperature_c_z_lag3,Three-month lag of temperature_c_z,same as base variable,Derived
 temperature_c_z_mean_lag0_2,Mean of current and prior two months for temperature_c_z,same as base variable,Derived
 relative_humidity_pct_anomaly,Relative humidity pct anomaly,see source,Source/derived
 relative_humidity_pct_z,Humidity anomaly z-score relative to province calendar-month 1991-2020 normal,z-score,Derived
 relative_humidity_pct_z_lag1,One-month lag of relative_humidity_pct_z,same as base variable,Derived
 relative_humidity_pct_z_lag2,Two-month lag of relative_humidity_pct_z,same as base variable,Derived
+relative_humidity_pct_z_lag3,Three-month lag of relative_humidity_pct_z,same as base variable,Derived
 relative_humidity_pct_z_mean_lag0_2,Mean of current and prior two months for relative_humidity_pct_z,same as base variable,Derived
 precipitation_mm_anomaly,Precipitation mm anomaly,see source,Source/derived
 precipitation_mm_z,Precipitation anomaly z-score relative to province calendar-month 1991-2020 normal,z-score,Derived
 precipitation_mm_z_lag1,One-month lag of precipitation_mm_z,same as base variable,Derived
 precipitation_mm_z_lag2,Two-month lag of precipitation_mm_z,same as base variable,Derived
+precipitation_mm_z_lag3,Three-month lag of precipitation_mm_z,same as base variable,Derived
 precipitation_mm_z_mean_lag0_2,Mean of current and prior two months for precipitation_mm_z,same as base variable,Derived
 heavy_rain_anomaly,1 when precipitation anomaly is at least +1 SD,binary,Derived
 hot_anomaly,1 when temperature anomaly is at least +1 SD,binary,Derived

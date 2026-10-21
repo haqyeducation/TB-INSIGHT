@@ -1,0 +1,39 @@
+province,n_HH_raw,n_LL_raw,persistence_category_raw
+ACEH,0,0,Not significant
+SUMATERA UTARA,0,0,Not significant
+SUMATERA BARAT,0,0,Not significant
+RIAU,0,0,Not significant
+JAMBI,0,0,Not significant
+SUMATERA SELATAN,0,20,Persistent Coldspot
+BENGKULU,0,0,Not significant
+LAMPUNG,0,0,Not significant
+KEP. BANGKA BELITUNG,0,0,Not significant
+KEPULAUAN RIAU,0,0,Not significant
+DKI JAKARTA,2,0,Sporadic Hotspot
+JAWA BARAT,3,0,Sporadic Hotspot
+JAWA TENGAH,0,0,Not significant
+DI YOGYAKARTA,0,0,Not significant
+JAWA TIMUR,0,15,Persistent Coldspot
+BANTEN,1,0,Sporadic Hotspot
+BALI,0,0,Not significant
+NUSA TENGGARA BARAT,0,24,Persistent Coldspot
+NUSA TENGGARA TIMUR,0,0,Not significant
+KALIMANTAN BARAT,0,0,Not significant
+KALIMANTAN TENGAH,0,0,Not significant
+KALIMANTAN SELATAN,0,0,Not significant
+KALIMANTAN TIMUR,0,0,Not significant
+KALIMANTAN UTARA,0,0,Not significant
+SULAWESI UTARA,0,0,Not significant
+SULAWESI TENGAH,0,0,Not significant
+SULAWESI SELATAN,0,0,Not significant
+SULAWESI TENGGARA,0,0,Not significant
+GORONTALO,0,0,Not significant
+SULAWESI BARAT,0,0,Not significant
+MALUKU,0,0,Not significant
+MALUKU UTARA,0,0,Not significant
+PAPUA BARAT,0,0,Not significant
+PAPUA BARAT DAYA,0,0,Not significant
+PAPUA,0,0,Not significant
+PAPUA SELATAN,0,0,Not significant
+PAPUA TENGAH,24,0,Persistent Hotspot
+PAPUA PEGUNUNGAN,0,0,Not significant

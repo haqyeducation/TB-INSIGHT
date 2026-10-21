@@ -1,0 +1,17 @@
+{
+  "model_id": "temperature_x_sanitation",
+  "formula": "jumlah_pasien ~ temperature_c_z_mean_lag0_2 + sanitation_access_pct_z + temperature_c_z_mean_lag0_2:sanitation_access_pct_z + C(province_code) + C(period)",
+  "run_timestamp_utc": "2026-10-17T15:19:31.201806+00:00",
+  "vulnerability_mean": 81.87223684210528,
+  "vulnerability_sd": 15.313452952021203,
+  "n_observations": 912,
+  "n_provinces": 38,
+  "n_periods": 24,
+  "converged": true,
+  "aic": 12583.09840075992,
+  "deviance": 4679.1988003288825,
+  "outcome": "jumlah_pasien",
+  "offset": "log_population_offset",
+  "fixed_effects": "province_code + period",
+  "cluster": "province_code"
+}

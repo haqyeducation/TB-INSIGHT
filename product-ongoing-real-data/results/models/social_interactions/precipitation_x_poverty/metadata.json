@@ -1,0 +1,17 @@
+{
+  "model_id": "precipitation_x_poverty",
+  "formula": "jumlah_pasien ~ precipitation_mm_z_mean_lag0_2 + poverty_pct_z + precipitation_mm_z_mean_lag0_2:poverty_pct_z + C(province_code) + C(period)",
+  "run_timestamp_utc": "2026-10-17T15:19:31.201806+00:00",
+  "vulnerability_mean": 10.924473684210525,
+  "vulnerability_sd": 6.572969374390256,
+  "n_observations": 912,
+  "n_provinces": 38,
+  "n_periods": 24,
+  "converged": true,
+  "aic": 12571.21497284189,
+  "deviance": 4667.315372410763,
+  "outcome": "jumlah_pasien",
+  "offset": "log_population_offset",
+  "fixed_effects": "province_code + period",
+  "cluster": "province_code"
+}

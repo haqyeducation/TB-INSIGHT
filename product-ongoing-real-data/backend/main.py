@@ -9,6 +9,7 @@ from pathlib import Path
 import pandas as pd
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import FileResponse, JSONResponse
 
 app = FastAPI(title="TB-INSIGHT API", description="Official national and province TB data")
 app.add_middleware(
@@ -38,6 +39,8 @@ tb_month = load_csv("tb_national_month_official.csv")
 tb_province = load_csv("tb_province_annual_official.csv")
 tb_province_month = load_csv("tb_treatment_outcomes_province_month_official.csv")
 bps_annual = load_csv("bps_province_annual_official.csv")
+analysis_panel = load_csv("analysis_panel_tb_climate_disaster_2024_2025.csv")
+source_ledger = load_csv("project_source_ledger.csv")
 province_panel = (
     tb_province.merge(
         bps_annual[bps_annual["year"] == 2024],
@@ -110,6 +113,45 @@ def get_bps_province_annual():
 @app.get("/api/analysis/province-2024")
 def get_province_panel():
     return records(province_panel)
+
+
+@app.get("/api/analysis/panel")
+def get_analysis_panel(province_code: str | None = None, start: str = "2024-01", end: str = "2025-12"):
+    frame = analysis_panel
+    if province_code:
+        frame = frame[frame.province_code == province_code.zfill(2)]
+    if "period" in frame:
+        frame = frame[(frame.period >= start) & (frame.period <= end)]
+    return records(frame)
+
+
+@app.get("/api/spatial/provinces")
+def get_province_boundaries():
+    path = DATA_DIR / "spatial" / "province_boundaries_38.geojson"
+    if not path.exists():
+        raise HTTPException(status_code=503, detail="Canonical province boundary is not ready")
+    import json
+    return JSONResponse(json.loads(path.read_text(encoding="utf-8")))
+
+
+@app.get("/api/spatial/lisa")
+def get_lisa(period: str = "2025-12"):
+    path = ROOT / "results" / "spatial" / "hotspot_monthly_lisa.csv"
+    if not path.exists():
+        raise HTTPException(status_code=503, detail="LISA results are not ready")
+    frame = pd.read_csv(path, dtype={"province_code": str})
+    return records(frame[frame.period == period])
+
+
+@app.get("/api/provenance")
+def get_provenance():
+    return records(source_ledger)
+
+
+@app.get("/api/download/panel.csv")
+def download_panel():
+    path = DATA_DIR / "analysis_panel_tb_climate_disaster_2024_2025.csv"
+    return FileResponse(path, filename=path.name, media_type="text/csv")
 
 
 @app.get("/api/metadata")

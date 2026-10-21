@@ -1,0 +1,2 @@
+n_observations,n_provinces,n_periods,converged,aic,deviance,outcome,offset,fixed_effects,cluster
+912,38,24,True,12562.058056873075,4658.158456441945,jumlah_pasien,log_population_offset,province_code + period,province_code

@@ -1,0 +1,2 @@
+term,coefficient_log_rate,cluster_robust_se,incidence_rate_ratio,irr_ci95_low,irr_ci95_high,p_value
+precipitation_mm_z_lag2,3.1777781003860736e-05,0.002937396639032918,1.000031778285923,0.9942908399188245,1.0058058642714158,0.9913683749978291
