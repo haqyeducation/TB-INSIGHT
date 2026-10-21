@@ -71,6 +71,9 @@ Frontend pada terminal kedua:
 cd frontend
 pnpm install --frozen-lockfile=false
 pnpm run dev
+
+npm ci
+npm run dev
 ```
 
 API berjalan di `http://localhost:8000`, sedangkan Vite menampilkan alamat frontend pada terminal. Untuk deployment, project juga menyediakan `Dockerfile`.
